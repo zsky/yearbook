@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block style %}
+<link type="text/css" rel="stylesheet"
+href="../static/css/bootstrap-datetimepicker.min.css"/>
+{% endblock %}
+
+{% block content %}
+<h3 class="text-center"> Yearbook  </h3>
+<div>
+    <p>{{ team.title }}</p>
+    <p>{{ team.intro }}</p>
+</div>
+<div class="">
+    <form  method="post"
+        class="form-horizontal"  id="add_event_form">
+            <div class="form-group">
+                <label for="dtp_input1" class="col-md-2 control-label">Event DateTime Picking</label>
+                <div class="input-group date form_datetime col-md-5"
+                    data-date="2014-01-16" data-date-format="dd MM yyyy" data-link-field="dtp_input1">
+                    <input  class="form-control event_time" size="16" type="text" value="" readonly>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                </div>
+                <input type="hidden" id="dtp_input1" value="" /><br/>
+            </div>
+
+        <label> title
+            <input type="text" class="form-control event_title" 
+            placeholder="title"/>
+        </label>
+        <label>content
+            <textarea  class="form-control event_content" rows="3">
+            </textarea>
+        </label>
+        <a value="{{team.id}}" id="add_event_button" class="btn btn-default">go</a>
+    </form>
+</div>
+<div>
+    {% for e in events %}
+    {{ e.timestamp }}
+    {{ e.title }} 
+    {{ e.content }}
+    {% endfor %}
+</div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript" rel="script"
+    src="../static/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" rel="script"
+    src="../static/js/admin_team.js"></script>
+{% endblock %}
+

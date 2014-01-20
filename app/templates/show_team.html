@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block style %}
+<link type="text/css" rel="stylesheet" href="../static/css/o.css"/>
+{% endblock %}
+
+{% block content %}
+<h3 class="text-center"> Yearbook  </h3>
+<div>
+    <a href="/admin_team/{{ team.id }}">manage team</a>
+</div>
+<div>
+    <p>{{ team.title }}</p>
+    <p>{{ team.intro }}</p>
+</div>
+<div>
+    {% for e in events %}
+    {{ e.timestamp }}
+    {{ e.title }} 
+    {{ e.content }}
+    {% endfor %}
+</div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript" rel="script" src="../static/js/o.js"></script>
+{% endblock %}
+

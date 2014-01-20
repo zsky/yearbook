@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block style %}
+<link type="text/css" rel="stylesheet" href="../static/css/home.css"/>
+{% endblock %}
+
+{% block content %}
+<h3 class="text-center"> Yearbook  </h3>
+<div class="input-group">
+    <input type="text" class="form-control" name="search_words" 
+    placeholder="search teams"/>
+    <div class="input-group-btn">
+        <button><i class="glyphicon glyphicon-search"></i></button>
+    </div>
+</div>
+<div class="loginDiv">
+    <form action="{{ url_for('login') }}" method="post">
+        <input type="text" class="form-control" name="email"
+    placeholder="email"/>
+        <input type="password" class="form-control" name="password"
+    placeholder="password"/>
+        <button type="submit" class="btn btn-default">submit</button>
+    </form>
+</div>
+<div class="registerDiv">
+    <form action="{{ url_for('register') }}" method="post">
+        <input type="text" class="form-control" name="username" />
+        <input type="text" class="form-control" name="email" 
+    placeholder="email"/>
+        <input type="password" class="form-control" name="password" 
+    placeholder="password"/>
+        <button type="submit" class="btn btn-default">submit</button>
+    </form>
+</div>
+
+<div class="">
+    <button class="login">login</button>
+    <button class="register">register</button>
+</div>
+<div>
+    <a href="/profile">profile</a>
+</div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript" rel="script" src="../static/js/home.js"></script>
+{% endblock %}
+
