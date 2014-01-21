@@ -6,12 +6,16 @@
 {% block content %}
 <h3 class="text-center"> Yearbook  </h3>
 <div class="input-group">
-    <input type="text" class="form-control" name="search_words" 
+    <input type="text" class="form-control search_words" 
     placeholder="search teams"/>
     <div class="input-group-btn">
-        <button><i class="glyphicon glyphicon-search"></i></button>
+        <button id="search_button"><i class="glyphicon glyphicon-search"></i></button>
     </div>
 </div>
+
+<div id="search_results">
+</div>
+
 <div class="loginDiv">
     <form action="{{ url_for('login') }}" method="post">
         <input type="text" class="form-control" name="email"

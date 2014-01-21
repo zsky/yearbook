@@ -12,10 +12,24 @@ team_admins = db.Table('team_admins',
         db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
         )
 
+team_tags = db.Table('team_tags',
+        db.Column('team_id', db.Integer, db.ForeignKey('team.id')),
+        db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')),
+        )
+
 user_likes = db.Table('user_likes',
         db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
         db.Column('event_id', db.Integer, db.ForeignKey('event.id')),
         )
+
+class Tag(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    title = db.Column(db.String(40))
+
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    title = db.Column(db.String(40))
+    events = db.relationship('Event', lazy='dynamic')
 
 class Team(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -23,6 +37,7 @@ class Team(db.Model):
     intro = db.Column(db.String(240))
     events = db.relationship('Event', lazy='dynamic')
     admins = db.relationship('User', lazy='dynamic', secondary=team_admins)
+    tags = db.relationship('Tag', lazy='dynamic', secondary=team_tags)
 
 
 class User(db.Model):
@@ -30,8 +45,6 @@ class User(db.Model):
     username = db.Column(db.String(40))
     email = db.Column(db.String(150), unique = True)
     pwdhash = db.Column(db.String(32))
-    #shares = db.relationship('Share', lazy='dynamic', backref='author')
-    #comments = db.relationship('Comment', lazy='dynamic', backref='publisher')
     like_events = db.relationship('Event', lazy='dynamic', secondary=user_likes)
     teams = db.relationship('Team', lazy='dynamic', backref=db.backref('users',
         lazy='dynamic'),  secondary=team_users)

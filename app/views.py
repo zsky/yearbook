@@ -6,8 +6,48 @@ from app import app, db
 from models import Team, User, Event, Comment, Photo
 from forms import RegisterForm, LoginForm, CommentForm
 from datetime import datetime, timedelta
-import json, md5, os
+import json, md5, os, re
+import urllib, urllib2
 
+
+client_id = "783310742606-v1494s0gcrrf6keoqo57af7rsr238nu0.apps.googleusercontent.com"
+client_secret = "PQOfLLC7t0XHLuZpNduzMiis"
+redirect_uri = 'http://localhost:5000/callback'
+
+auth_url = 'https://accounts.google.com/o/oauth2/auth'
+token_url = 'https://accounts.google.com/o/oauth2/token'
+
+
+@app.route('/o_login')
+def o_login():
+    data = {
+            'response_type': 'code',
+            'client_id': client_id,
+            'redirect_uri': redirect_uri,
+            'scope': 'email'
+            }
+    url = auth_url + '?'
+    for (k, v) in data.items():
+        param = k + '=' + v + '&'
+        url += param
+    return redirect(url)
+
+@app.route('/callback')
+def callback():
+    if request.method == 'GET':
+        code = request.args.get('code', '')
+        data = {
+                'code': code,
+                'client_id': client_id,
+                'client_secret': client_secret,
+                'redirect_uri': redirect_uri,
+                'grant_type': 'authorization_code'
+                }
+        post_data = urllib.urlencode(data)
+        req = urllib2.Request(token_url, data=post_data)
+        res = urllib2.urlopen(req).read()
+        print res
+    return 'hs'
 
 # users login and logout
 @app.route('/login', methods = ['POST'])
@@ -43,8 +83,8 @@ def register():
 
 
 
-@app.route('/', methods = ['GET', 'POST'])
-@app.route('/index', methods = ['GET', 'POST'])
+@app.route('/')
+@app.route('/index')
 def index():
     return render_template('index.html',
             title = 'home')
@@ -91,6 +131,23 @@ def show_team(team_id):
             team = team,
             events = team_events)
 
+@app.route('/search_teams', methods=['POST'])
+def search_teams():
+    words = request.form['words']
+    teams = Team.query.all()
+    results = []
+    for t in teams:
+        title_match = re.findall(words, t.title)
+        if title_match:
+            results.append(t)
+    for t in teams:
+        intro_match = re.findall(words, t.intro)
+        if intro_match:
+            results.append(t)
+
+    print results
+    return render_template('team_entries.html',
+            teams = results)
 
 @app.route('/admin_team/<int:team_id>')
 def admin_team(team_id):
