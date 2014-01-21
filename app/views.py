@@ -1,12 +1,12 @@
 #encoding:utf-8
 from flask import render_template, redirect, url_for, session,\
         request, flash, abort, make_response, send_from_directory
+from werkzeug import secure_filename
 from app import app, db
 from models import Team, User, Event
 from forms import RegisterForm, LoginForm, CommentForm
 from datetime import datetime, timedelta
-import json, md5
-
+import json, md5, os
 
 
 # users login and logout
@@ -117,15 +117,34 @@ def add_event():
     else:
         return redirect(url_for('index'))
 
-    event_date = datetime.strptime(request.form['time'], '%m %B %Y')
+    t_id = request.form['team_id'],
+    team_id = int(t_id[0])
+
+    event_date = datetime.strptime(request.form['event_time'], '%d %B %Y')
+    date_path = event_date.strftime('%Y-%m')
+    save_path = os.path.join(app.config['UPLOAD_FOLDER'], 
+                'team-'+str(team_id), date_path)
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+
+    file = request.files['file']
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'],
+                'team-'+str(team_id), date_path, filename))
+
 
     event = Event(
-            title = request.form['title'],
-            content = request.form['content'],
+            title = request.form['event_title'],
+            content = request.form['event_content'],
             timestamp = event_date,
-            team_id = request.form['team_id'],
+            team_id = team_id,
             author_id = user_id
             )
     db.session.add(event)
     db.session.commit()
-    return 'hs'
+    return redirect(url_for('admin_team', team_id=team_id)) 
+
+def allowed_file(filename):
+    return '.' in filename and\
+            filename.rsplit('.',1)[1] in app.config['ALLOWED_EXTENSIONS']

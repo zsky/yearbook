@@ -17,16 +17,11 @@ user_likes = db.Table('user_likes',
         db.Column('event_id', db.Integer, db.ForeignKey('event.id')),
         )
 
-team_events = db.Table('team_events',
-        db.Column('team_id', db.Integer, db.ForeignKey('team.id')),
-        db.Column('event_id', db.Integer, db.ForeignKey('event.id')),
-        )
-
 class Team(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     title = db.Column(db.String(40), unique=True)
     intro = db.Column(db.String(240))
-    events = db.relationship('Event', lazy='dynamic', secondary=team_events)
+    events = db.relationship('Event', lazy='dynamic')
     admins = db.relationship('User', lazy='dynamic', secondary=team_admins)
 
 
@@ -72,6 +67,7 @@ class Event(db.Model):
     content = db.Column(db.String(450))
     likes = db.Column(db.Integer, default=0)
     timestamp = db.Column(db.DateTime)
+    photos = db.relationship('Photo', lazy='dynamic')
     team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     
@@ -82,3 +78,8 @@ class Comment(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
     
+class Photo(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    path = db.Column(db.String(180))
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+

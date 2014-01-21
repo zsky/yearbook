@@ -11,28 +11,32 @@ href="../static/css/bootstrap-datetimepicker.min.css"/>
     <p>{{ team.intro }}</p>
 </div>
 <div class="">
-    <form  method="post"
-        class="form-horizontal"  id="add_event_form">
+    <form  action="{{url_for('add_event')}}" method="post"
+        class="form-horizontal" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="dtp_input1" class="col-md-2 control-label">Event DateTime Picking</label>
                 <div class="input-group date form_datetime col-md-5"
                     data-date="2014-01-16" data-date-format="dd MM yyyy" data-link-field="dtp_input1">
-                    <input  class="form-control event_time" size="16" type="text" value="" readonly>
+                    <input  class="form-control" name="event_time" size="16" type="text" value="" readonly>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
                 </div>
                 <input type="hidden" id="dtp_input1" value="" /><br/>
             </div>
 
+        <label>photo 
+            <input type="file" class="form-control" name="file" />
+        </label>
         <label> title
-            <input type="text" class="form-control event_title" 
+            <input type="text" class="form-control" name="event_title" 
             placeholder="title"/>
         </label>
         <label>content
-            <textarea  class="form-control event_content" rows="3">
+            <textarea  class="form-control" name="event_content" rows="3">
             </textarea>
         </label>
-        <a value="{{team.id}}" id="add_event_button" class="btn btn-default">go</a>
+        <input type="text" class="ide" name="team_id" value="{{team.id}}"/>
+        <button type="submit"  class="btn btn-default">go</button>
     </form>
 </div>
 <div>

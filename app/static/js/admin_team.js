@@ -10,12 +10,13 @@ $(document).ready(function(){
         showMeridian: 1
     });
 
-    $('#add_event_button').on('click', function(){
+/*    $('#add_event_button').on('click', function(){
         var event_time = $('.event_time').val();
         var event_title = $('.event_title').val();
         var event_content = $('.event_content').val();
         var team_id = $(this).attr('value');
-        console.log(event_time);
+        var event_photo = $('.event_photo').val();
+        console.log(event_photo);
         $.ajax({
             type: "POST",
             url: "/add_event",
@@ -23,7 +24,8 @@ $(document).ready(function(){
                 time: event_time,
                 title: event_title,
                 content: event_content,
-                team_id: team_id
+                team_id: team_id,
+                photo: event_photo
             }
         }).done(function(){
             console.log('ok');
@@ -31,6 +33,6 @@ $(document).ready(function(){
             console.log('failed');
         })
 
-    });
+    });  */
 
 })
