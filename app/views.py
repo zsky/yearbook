@@ -3,7 +3,7 @@ from flask import render_template, redirect, url_for, session,\
         request, flash, abort, make_response, send_from_directory
 from werkzeug import secure_filename
 from app import app, db
-from models import Team, User, Event
+from models import Team, User, Event, Comment, Photo
 from forms import RegisterForm, LoginForm, CommentForm
 from datetime import datetime, timedelta
 import json, md5, os
@@ -101,7 +101,16 @@ def admin_team(team_id):
         return redirect(url_for('index'))
     
     team = Team.query.get(team_id)
-    team_events = team.events
+    team_events = team.events.order_by(Event.timestamp.desc())
+    print 'hsh'
+    for e in team_events:
+        for p in e.photos:
+            print p.path
+    photos = Photo.query.all()
+    for p in photos:
+        print p.path, p.event_id
+        
+
     if user not in team.admins:
         return redirect(url_for('show_team', team_id=team_id))
 
@@ -133,7 +142,6 @@ def add_event():
         file.save(os.path.join(app.config['UPLOAD_FOLDER'],
                 'team-'+str(team_id), date_path, filename))
 
-
     event = Event(
             title = request.form['event_title'],
             content = request.form['event_content'],
@@ -142,6 +150,13 @@ def add_event():
             author_id = user_id
             )
     db.session.add(event)
+    db.session.commit()
+
+    photo = Photo(
+            path = os.path.join('team-'+str(team_id), date_path, filename),
+            event_id = event.id
+            )
+    db.session.add(photo)
     db.session.commit()
     return redirect(url_for('admin_team', team_id=team_id)) 
 

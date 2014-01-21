@@ -15,11 +15,12 @@ href="../static/css/bootstrap-datetimepicker.min.css"/>
         class="form-horizontal" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="dtp_input1" class="col-md-2 control-label">Event DateTime Picking</label>
-                <div class="input-group date form_datetime col-md-5"
-                    data-date="2014-01-16" data-date-format="dd MM yyyy" data-link-field="dtp_input1">
+                <div class="input-group date form_date col-md-5"
+                    data-date="" data-date-format="dd MM yyyy" data-link-field="dtp_input1">
                     <input  class="form-control" name="event_time" size="16" type="text" value="" readonly>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon
+                            glyphicon-calendar"></span></span>
                 </div>
                 <input type="hidden" id="dtp_input1" value="" /><br/>
             </div>
@@ -35,15 +36,20 @@ href="../static/css/bootstrap-datetimepicker.min.css"/>
             <textarea  class="form-control" name="event_content" rows="3">
             </textarea>
         </label>
-        <input type="text" class="ide" name="team_id" value="{{team.id}}"/>
+        <input type="text" class="hide" name="team_id" value="{{team.id}}"/>
         <button type="submit"  class="btn btn-default">go</button>
     </form>
 </div>
 <div>
     {% for e in events %}
-    {{ e.timestamp }}
-    {{ e.title }} 
-    {{ e.content }}
+    <div>
+        {{ e.timestamp.strftime('%Y-%m-%d') }}
+        {{ e.title }} 
+        {{ e.content }}
+        {% for p in e.photos %}
+        {{ p.path }}
+        {% endfor %}
+    </div>
     {% endfor %}
 </div>
 {% endblock %}
