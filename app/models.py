@@ -35,6 +35,7 @@ class Team(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     title = db.Column(db.String(40), unique=True)
     intro = db.Column(db.String(240))
+    image_url = db.Column(db.String(92), default='')
     events = db.relationship('Event', lazy='dynamic')
     admins = db.relationship('User', lazy='dynamic', secondary=team_admins)
     tags = db.relationship('Tag', lazy='dynamic', secondary=team_tags)
@@ -45,6 +46,7 @@ class User(db.Model):
     username = db.Column(db.String(40))
     email = db.Column(db.String(150), unique = True)
     pwdhash = db.Column(db.String(32))
+    image_url = db.Column(db.String(92), default='')
     like_events = db.relationship('Event', lazy='dynamic', secondary=user_likes)
     teams = db.relationship('Team', lazy='dynamic', backref=db.backref('users',
         lazy='dynamic'),  secondary=team_users)
@@ -81,6 +83,7 @@ class Event(db.Model):
     likes = db.Column(db.Integer, default=0)
     timestamp = db.Column(db.DateTime)
     photos = db.relationship('Photo', lazy='dynamic')
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     

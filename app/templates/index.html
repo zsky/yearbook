@@ -24,6 +24,8 @@
     placeholder="password"/>
         <button type="submit" class="btn btn-default">submit</button>
     </form>
+    <a href="{{ url_for('auth_google') }}"> google</a>
+    <a href="{{ url_for('auth_douban') }}"> douban</a>
 </div>
 <div class="registerDiv">
     <form action="{{ url_for('register') }}" method="post">
@@ -36,13 +38,17 @@
     </form>
 </div>
 
+{% if session.logged_in %}
+<div>
+    <a href="/profile">profile</a>
+    <a href="/logout">logout</a>
+</div>
+{% else %}
 <div class="">
     <button class="login">login</button>
     <button class="register">register</button>
 </div>
-<div>
-    <a href="/profile">profile</a>
-</div>
+{% endif %}
 {% endblock %}
 {% block script %}
 <script type="text/javascript" rel="script" src="../static/js/home.js"></script>

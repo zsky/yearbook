@@ -1,0 +1,24 @@
+#preview{
+    width: 300px;
+    display: none;
+    position: relative;
+    left:12px;
+    top:12px;
+}
+.preview_img{
+    width: 300px;
+}
+.crop_div{
+    left: 100px;
+    top: 60px;
+    width: 100px;
+    height: 100px;
+    background: rgba(0,0,0,0.1);
+    position: absolute;
+}
+.upload_photo{
+    position: absolute;
+    left: 200px;
+    top: 250px;
+}
+

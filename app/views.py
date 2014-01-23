@@ -7,47 +7,76 @@ from models import Team, User, Event, Comment, Photo
 from forms import RegisterForm, LoginForm, CommentForm
 from datetime import datetime, timedelta
 import json, md5, os, re
-import urllib, urllib2
+import uuid
+from PIL import Image
+from oauth import google, douban, get_auth, get_token, get_info
 
 
-client_id = "783310742606-v1494s0gcrrf6keoqo57af7rsr238nu0.apps.googleusercontent.com"
-client_secret = "PQOfLLC7t0XHLuZpNduzMiis"
-redirect_uri = 'http://localhost:5000/callback'
+def auth_register(profile):
+    u = User.query.filter_by(email = profile['email']).first()
+    if u:
+        session['logged_in'] = True
+        session['user_id'] = u.id
+        return redirect(url_for('profile'))
 
-auth_url = 'https://accounts.google.com/o/oauth2/auth'
-token_url = 'https://accounts.google.com/o/oauth2/token'
+    user = User(username = profile['username'], 
+            email = profile['email'],
+            password = profile['password']) 
+    image_url = profile.get('image_url')
+    if image_url:
+        user.image_url = image_url
+    db.session.add(user)
+    db.session.commit()
+    session['logged_in'] = True
+    session['user_id'] = user.id
+    return redirect(url_for('profile'))
 
+@app.route('/auth_douban')
+def auth_douban():
+    return redirect(get_auth(douban))
 
-@app.route('/o_login')
-def o_login():
-    data = {
-            'response_type': 'code',
-            'client_id': client_id,
-            'redirect_uri': redirect_uri,
-            'scope': 'email'
-            }
-    url = auth_url + '?'
-    for (k, v) in data.items():
-        param = k + '=' + v + '&'
-        url += param
-    return redirect(url)
-
-@app.route('/callback')
-def callback():
+@app.route('/auth_douban_callback')
+def auth_douban_callback():
     if request.method == 'GET':
         code = request.args.get('code', '')
-        data = {
-                'code': code,
-                'client_id': client_id,
-                'client_secret': client_secret,
-                'redirect_uri': redirect_uri,
-                'grant_type': 'authorization_code'
+        token = get_token(douban, code)
+        info_res = get_info(douban, token)
+        info_json = json.loads(info_res)
+        profile = {
+                'email': 'douban' + info_json['uid'],
+                'username': info_json['name'],
+                'image_url': info_json['avatar'],
+                'password': 'douban'
                 }
-        post_data = urllib.urlencode(data)
-        req = urllib2.Request(token_url, data=post_data)
-        res = urllib2.urlopen(req).read()
-        print res
-    return 'hs'
+        return auth_register(profile)
+    
+@app.route('/auth_google')
+def auth_google():
+    return redirect(get_auth(google))
+
+@app.route('/auth_google_callback')
+def auth_google_callback():
+    if request.method == 'GET':
+        code = request.args.get('code', '')
+        token = get_token(google, code)
+        info_res = get_info(google, token)
+        info_json = json.loads(info_res)
+        plus_name = info_json['displayName']
+        image = info_json['image']['url']
+        emails = info_json['emails']
+        for i in emails:
+            if i['type'] == 'account':
+                email = i['value']
+                break
+        profile = {
+                'email': email,
+                'username': plus_name,
+                'image_url': image,
+                'password': 'google'
+                }
+        return auth_register(profile)
+    
+
 
 # users login and logout
 @app.route('/login', methods = ['POST'])
@@ -66,8 +95,9 @@ def logout():
     session.pop('user_id',None)
     redirect_to_home = redirect(url_for('index'))
     resp = make_response(redirect_to_home)
-    resp.set_cookie('email', expires=0)
-    resp.set_cookie('pwd', expires=0)
+#    resp.set_cookie('email', expires=0)
+#    resp.set_cookie('pwd', expires=0)
+    print session
     return resp
 
 @app.route('/register', methods = ['POST'])
@@ -100,7 +130,55 @@ def profile():
 
     return render_template('profile.html',
             title = 'profile',
+            user = user,
             teams = teams)
+
+@app.route('/update_photo', methods = ['POST'])
+def update_photo():
+    if 'user_id' in session:
+        user_id = session['user_id']
+        user = User.query.get(user_id)
+    else:
+        return redirect(url_for('index'))
+
+    file = request.files['user_image']
+    im = Image.open(file.stream)
+    img_name = str(uuid.uuid4()) + '.' + file.filename.rsplit('.', 1)[1]
+
+    start_x = float(request.form['crop_x'])*im.size[0]
+    start_y = float(request.form['crop_y'])*im.size[1]
+    end_x = start_x + float(request.form['crop_width'])*im.size[0]
+    end_y = start_y + float(request.form['crop_height'])*im.size[1]
+    box = (int(start_x), int(start_y), int(end_x), int(end_y))
+    region = im.crop(box)
+
+    save_path = os.path.join(app.config['UPLOAD_FOLDER'], 
+                'user_photos', 'user_'+str(user.id))
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+
+    region.save(save_path + '/' + img_name)
+
+    # delete old image 
+    old_image_path = app.config['UPLOAD_FOLDER'] + user.image_url[16:]
+    if os.path.isfile(old_image_path):
+        os.remove(old_image_path)
+
+    user.image_url = '../static/upload/user_photos/user_' + str(user.id) + '/' + img_name
+    db.session.add(user)
+    db.session.commit()
+    
+    return user.image_url 
+
+@app.route('/update_profile', methods = ['GET', 'POST'])
+def update_profile():
+    if 'user_id' in session:
+        user_id = session['user_id']
+        user = User.query.get(user_id)
+    else:
+        return redirect(url_for('index'))
+    if request.method == 'POST':
+        return 's'
 
 @app.route('/add_team', methods = ['GET', 'POST'])
 def add_team():

@@ -1,10 +1,21 @@
 {% extends "base.html" %}
 {% block style %}
-<link type="text/css" rel="stylesheet" href="../static/css/o.css"/>
+<link type="text/css" rel="stylesheet" href="../static/css/photo.css"/>
 {% endblock %}
 
 {% block content %}
 <h3 class="text-center"> Yearbook  </h3>
+<p> {{ user.username }}</p>
+<img class="user_avatar" src="{{ user.image_url }}" width="48" height="48"/>
+<div>
+
+    <input type="file" class="form-control" id="photo_input" accept="image/*"  />
+    <div id="preview">
+        <div class="crop_div"></div>
+    </div>
+    <button class="upload_photo">upload photo</button>
+</div>
+
 <div>
     <h5> my teams</h5>
     {% for t in teams %}
@@ -14,6 +25,14 @@
 <a href="{{ url_for('add_team') }}">create a team</a>
 {% endblock %}
 {% block script %}
-<script type="text/javascript" rel="script" src="../static/js/o.js"></script>
+<script type="text/javascript" rel="script"
+    src="../static/js/jqueryUI/jquery.ui.core.js"></script>
+<script type="text/javascript" rel="script"
+    src="../static/js/jqueryUI/jquery.ui.widget.js"></script>
+<script type="text/javascript" rel="script"
+    src="../static/js/jqueryUI/jquery.ui.mouse.js"></script>
+<script type="text/javascript" rel="script"
+    src="../static/js/jqueryUI/jquery.ui.draggable.js"></script>
+<script type="text/javascript" rel="script" src="../static/js/upload_photo.js"></script>
 {% endblock %}
 
