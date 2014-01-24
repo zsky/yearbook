@@ -1,0 +1,7 @@
+{% for c in comments %}
+<div>
+    <p> --comment</p>
+    {{ c.body }}
+    {{ c.author.username }}
+</div>
+{% endfor %}

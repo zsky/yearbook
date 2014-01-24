@@ -13,6 +13,12 @@
     </div>
 </div>
 
+<div>
+    <p> --tags</p>
+    {% for t in tags %}
+    <button class="tag_teams" value="{{t.id}}">{{ t.title }}</button>
+    {%  endfor %}
+</div>
 <div id="search_results">
 </div>
 

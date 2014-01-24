@@ -38,7 +38,8 @@ class Team(db.Model):
     image_url = db.Column(db.String(92), default='')
     events = db.relationship('Event', lazy='dynamic')
     admins = db.relationship('User', lazy='dynamic', secondary=team_admins)
-    tags = db.relationship('Tag', lazy='dynamic', secondary=team_tags)
+    tags = db.relationship('Tag', secondary=team_tags,
+            backref=db.backref('teams', lazy='dynamic'))
 
 
 class User(db.Model):
@@ -47,6 +48,8 @@ class User(db.Model):
     email = db.Column(db.String(150), unique = True)
     pwdhash = db.Column(db.String(32))
     image_url = db.Column(db.String(92), default='')
+    messages = db.relationship('Message', lazy='dynamic')
+    comments = db.relationship('Comment', lazy='dynamic', backref='author')
     like_events = db.relationship('Event', lazy='dynamic', secondary=user_likes)
     teams = db.relationship('Team', lazy='dynamic', backref=db.backref('users',
         lazy='dynamic'),  secondary=team_users)
@@ -76,6 +79,9 @@ class User(db.Model):
     def is_like(self, event):
         return event in self.like_events.all()
 
+    def is_member(self, team):
+        return team in self.teams
+
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     title = db.Column(db.String(180))
@@ -83,6 +89,7 @@ class Event(db.Model):
     likes = db.Column(db.Integer, default=0)
     timestamp = db.Column(db.DateTime)
     photos = db.relationship('Photo', lazy='dynamic')
+    comments = db.relationship('Comment', lazy='dynamic')
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -98,4 +105,11 @@ class Photo(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     path = db.Column(db.String(180))
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    from_id = db.Column(db.Integer)
+    to_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    m_type = db.Column(db.String(10))
+    body = db.Column(db.String(180))
 

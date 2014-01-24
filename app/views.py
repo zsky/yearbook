@@ -3,7 +3,7 @@ from flask import render_template, redirect, url_for, session,\
         request, flash, abort, make_response, send_from_directory
 from werkzeug import secure_filename
 from app import app, db
-from models import Team, User, Event, Comment, Photo
+from models import Team, User, Event, Comment, Photo, Tag, Category, Message
 from forms import RegisterForm, LoginForm, CommentForm
 from datetime import datetime, timedelta
 import json, md5, os, re
@@ -97,7 +97,6 @@ def logout():
     resp = make_response(redirect_to_home)
 #    resp.set_cookie('email', expires=0)
 #    resp.set_cookie('pwd', expires=0)
-    print session
     return resp
 
 @app.route('/register', methods = ['POST'])
@@ -116,7 +115,9 @@ def register():
 @app.route('/')
 @app.route('/index')
 def index():
+    tags = Tag.query.all()
     return render_template('index.html',
+            tags = tags,
             title = 'home')
 
 @app.route('/profile')
@@ -125,6 +126,8 @@ def profile():
         user_id = session['user_id']
         user = User.query.get(user_id)
         teams = user.teams 
+        messages = user.messages
+        print messages
     else:
         return redirect(url_for('index'))
 
@@ -153,7 +156,7 @@ def update_photo():
     region = im.crop(box)
 
     save_path = os.path.join(app.config['UPLOAD_FOLDER'], 
-                'user_photos', 'user_'+str(user.id))
+                'user_photos', 'user-'+str(user.id))
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
@@ -164,11 +167,35 @@ def update_photo():
     if os.path.isfile(old_image_path):
         os.remove(old_image_path)
 
-    user.image_url = '../static/upload/user_photos/user_' + str(user.id) + '/' + img_name
+    user.image_url = '../static/upload/user_photos/user-' + str(user.id) + '/' + img_name
     db.session.add(user)
     db.session.commit()
     
     return user.image_url 
+
+@app.route('/team_photo', methods = ['POST'])
+def team_photo():
+    file = request.files['user_image']
+    im = Image.open(file.stream)
+    img_name = str(uuid.uuid4()) + '.' + file.filename.rsplit('.', 1)[1]
+
+    start_x = float(request.form['crop_x'])*im.size[0]
+    start_y = float(request.form['crop_y'])*im.size[1]
+    end_x = start_x + float(request.form['crop_width'])*im.size[0]
+    end_y = start_y + float(request.form['crop_height'])*im.size[1]
+    box = (int(start_x), int(start_y), int(end_x), int(end_y))
+    region = im.crop(box)
+
+    save_path = os.path.join(app.config['UPLOAD_FOLDER'], 'team_photos')
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+
+    region.save(save_path + '/' + img_name)
+
+
+    image_url = '../static/upload/team_photos/' + img_name
+    
+    return image_url 
 
 @app.route('/update_profile', methods = ['GET', 'POST'])
 def update_profile():
@@ -191,9 +218,24 @@ def add_team():
     if request.method == 'POST':
         team = Team(title = request.form['title'],
             intro = request.form['intro'])
+
+        image_url = request.form['image_url']
+        if image_url:
+            team.image_url = image_url
+        else:
+            team.image_url = '../static/upload/default_team.png'
         team.admins.append(user)
         user.teams.append(team)
         db.session.add(team)
+        db.session.commit()
+        # add tags
+        add_tags = request.form['tags'].split(',')
+        for t in add_tags:
+            t = t.strip()
+            if Tag.query.filter_by(title=t).count() == 0 and t:
+                new_t = Tag(title = t)
+                db.session.add(new_t)
+                team.tags.append(new_t)
         db.session.commit()
         return redirect(url_for('profile'))
 
@@ -202,12 +244,28 @@ def add_team():
     
 @app.route('/show_team/<int:team_id>')
 def show_team(team_id):
+    is_member = False
+    team = Team.query.get(team_id)
+    if 'user_id' in session:
+        user_id = session['user_id']
+        user = User.query.get(user_id)
+        is_member = user.is_member(team)
+
     team = Team.query.get(team_id)
     team_events = team.events
     return render_template('show_team.html',
             title = 'show_team',
             team = team,
+            is_member = is_member,
             events = team_events)
+
+@app.route('/tag_teams', methods=['POST'])
+def tag_teams():
+    tag_id = request.form['tag_id']
+    tag = Tag.query.get(tag_id)
+    teams = tag.teams
+    return render_template('team_entries.html',
+            teams = teams)
 
 @app.route('/search_teams', methods=['POST'])
 def search_teams():
@@ -223,7 +281,6 @@ def search_teams():
         if intro_match:
             results.append(t)
 
-    print results
     return render_template('team_entries.html',
             teams = results)
 
@@ -237,13 +294,6 @@ def admin_team(team_id):
     
     team = Team.query.get(team_id)
     team_events = team.events.order_by(Event.timestamp.desc())
-    print 'hsh'
-    for e in team_events:
-        for p in e.photos:
-            print p.path
-    photos = Photo.query.all()
-    for p in photos:
-        print p.path, p.event_id
         
 
     if user not in team.admins:
@@ -265,6 +315,17 @@ def add_event():
     team_id = int(t_id[0])
 
     event_date = datetime.strptime(request.form['event_time'], '%d %B %Y')
+
+    event = Event(
+            title = request.form['event_title'],
+            content = request.form['event_content'],
+            timestamp = event_date,
+            team_id = team_id,
+            author_id = user_id
+            )
+    db.session.add(event)
+    db.session.commit()
+
     date_path = event_date.strftime('%Y-%m')
     save_path = os.path.join(app.config['UPLOAD_FOLDER'], 
                 'team-'+str(team_id), date_path)
@@ -277,24 +338,63 @@ def add_event():
         file.save(os.path.join(app.config['UPLOAD_FOLDER'],
                 'team-'+str(team_id), date_path, filename))
 
-    event = Event(
-            title = request.form['event_title'],
-            content = request.form['event_content'],
-            timestamp = event_date,
-            team_id = team_id,
-            author_id = user_id
-            )
-    db.session.add(event)
-    db.session.commit()
-
-    photo = Photo(
-            path = os.path.join('team-'+str(team_id), date_path, filename),
-            event_id = event.id
-            )
-    db.session.add(photo)
-    db.session.commit()
+        photo = Photo(
+                path = os.path.join('team-'+str(team_id), date_path, filename),
+                event_id = event.id
+                )
+        db.session.add(photo)
+        db.session.commit()
     return redirect(url_for('admin_team', team_id=team_id)) 
 
 def allowed_file(filename):
     return '.' in filename and\
             filename.rsplit('.',1)[1] in app.config['ALLOWED_EXTENSIONS']
+
+@app.route('/load_comments', methods=['POST'])
+def load_comments():
+    e_id = request.form['e_id']
+    event = Event.query.get(e_id)
+    comments = event.comments.order_by(Comment.timestamp.desc())
+    return render_template('comments.html',
+            comments = comments)
+
+@app.route('/add_comment', methods=['POST'])
+def add_comment():
+    if 'user_id' in session:
+        user_id = session['user_id']
+    else:
+        return redirect(url_for('index'))
+    e_id = request.form['e_id']
+    event = Event.query.get(e_id)
+    c = Comment(body = request.form['c_body'],
+            timestamp = datetime.now(),
+            user_id = user_id,
+            event_id = request.form['e_id'])
+    db.session.add(c)
+    db.session.commit()
+    return render_template('comments.html',
+                comments = [c])
+
+@app.route('/send_message', methods=['POST'])
+def send_message():
+    if 'user_id' in session:
+        user_id = session['user_id']
+        user = User.query.get(user_id)
+    else:
+        return redirect(url_for('index'))
+    m_body = request.form['m_body']
+    t_id = request.form['t_id']
+    team = Team.query.get(t_id)
+    team_admins = team.admins
+    print team_admins
+    for admin in team_admins:
+        print admin.id
+        print user in team.admins
+        m = Message(from_id = user_id,
+                to_id = admin.id,
+                m_type = 'join_team',
+                body = m_body)
+        db.session.add(m)
+
+    db.session.commit()
+    return 'ok'

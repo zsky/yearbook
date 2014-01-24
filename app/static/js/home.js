@@ -22,5 +22,19 @@ $(document).ready(function(){
         });
     });
 
+    $(".tag_teams").on("click", function(){
+        var tag_id = $(this).attr('value');
+        console.log(tag_id);
+
+        $.ajax({
+            type: "POST",
+            url: "tag_teams",
+            data: { tag_id: tag_id }
+        }).done(function(entries){
+            $("#search_results").html(entries);
+        }).fail(function(){
+            console.log('fail');
+        });
+    });
 
 })

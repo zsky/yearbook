@@ -6,16 +6,24 @@
 {% block content %}
 <h3 class="text-center"> Yearbook  </h3>
 <p> {{ user.username }}</p>
-<img class="user_avatar" src="{{ user.image_url }}" width="48" height="48"/>
+<img class="avatar" src="{{ user.image_url }}" width="48" height="48"/>
 <div>
 
     <input type="file" class="form-control" id="photo_input" accept="image/*"  />
-    <div id="preview">
-        <div class="crop_div"></div>
+    <div id="preview_div">
+        <div id="preview">
+            <div class="crop_div"></div>
+        </div>
+        <button class="upload_photo">upload photo</button>
     </div>
-    <button class="upload_photo">upload photo</button>
 </div>
 
+<div>
+    <p> --messages</p>
+    {% for m in messages %}
+    <p> {{ m.boy }}</p>
+    {% endfor %}
+</div>
 <div>
     <h5> my teams</h5>
     {% for t in teams %}

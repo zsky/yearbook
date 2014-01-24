@@ -9,18 +9,30 @@
     <a href="/admin_team/{{ team.id }}">manage team</a>
 </div>
 <div>
+    <img src="{{ team.image_url }}" width="60" height="60"/>
     <p>{{ team.title }}</p>
     <p>{{ team.intro }}</p>
+    <textarea class="form-control m_body" rows="3"
+        placeholder="message"></textarea>
+    <button class="send_message" value="{{ team.id }}">send</button>
 </div>
 <div>
     {% for e in events %}
     {{ e.timestamp }}
     {{ e.title }} 
     {{ e.content }}
+    {% if is_member %}
+        <button class="load_comments" value="{{ e.id }}">comment</button>
+        <div>
+        <input type="text" class="form-control c_body"/>
+        <button class="add_comment" value="{{ e.id }}">send</button>
+        <div id="event-{{e.id}}"></div>
+        </div>
+    {% endif %}
     {% endfor %}
 </div>
 {% endblock %}
 {% block script %}
-<script type="text/javascript" rel="script" src="../static/js/o.js"></script>
+<script type="text/javascript" rel="script" src="../static/js/show_team.js"></script>
 {% endblock %}
 

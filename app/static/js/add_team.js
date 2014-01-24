@@ -45,7 +45,7 @@ $(document).ready(function(){
         formData.append('crop_height', crop_height/img_height);
         $.ajax({
             type: "POST",
-            url: "/update_photo",
+            url: "/team_photo",
             processData: false,
             contentType: false,
             data: formData
@@ -53,6 +53,7 @@ $(document).ready(function(){
             preview_div.style.display = "none";
             $('.preview_img').remove();
             $('.avatar').attr('src', image_url);
+            $('.img_url').val(image_url);
 
         });
 
