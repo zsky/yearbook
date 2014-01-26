@@ -1,5 +1,5 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="zh-cn">
     <head>
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
         {% if title %}
@@ -13,7 +13,9 @@
     </head>
     <body>
 
-        {% block content %}{% endblock %}
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
 
         <script type="text/javascript" rel="script" 
             src="../static/js/jquery-min.js"></script>

@@ -9,3 +9,7 @@ SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:hs1019@localhost/yearbook'
 # upload files setting
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'app/static/upload')
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+
+# default team, user image path
+DEFAULT_TEAM_IMG = '../static/img/default_team.png'
+DEFAULT_USER_IMG = '../static/img/default_user.jpg'

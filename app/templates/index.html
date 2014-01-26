@@ -4,12 +4,80 @@
 {% endblock %}
 
 {% block content %}
-<h3 class="text-center"> Yearbook  </h3>
+<div class="header">
+{% if session.logged_in %}
+    <a href="/profile">profile</a>
+    <a href="/logout">logout</a>
+{% else %}
+    <a class="pull-right" data-toggle="modal"
+        data-target="#login_modal">login</a>
+    <a class="pull-right" data-toggle="modal"
+        data-target="#register_modal">register</a>
+{% endif %}
+</div>
+<!-- login modal -->
+<div class="modal fade" id="login_modal" tabindex="-1" role="dialog"
+    aria-labelledby="login in " aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">&times;</button>
+                <h3 class="pull-left"> login</h3>
+                <div class="auth_icons pull-right">
+                <a href="{{ url_for('auth_douban') }}"><img
+                    src="../static/img/douban_icon.jpg"/></a>
+                <a href="{{ url_for('auth_google') }}"><img 
+                    src="../static/img/google_icon.jpg"/></a>
+                </div>
+
+            </div>
+            <div class="modal-body">
+                <form action="{{ url_for('login') }}" method="post">
+                    <input type="text" class="form-control" name="email"
+                    placeholder="email"/>
+                    <input type="password" class="form-control" name="password"
+                    placeholder="password"/>
+                    <button type="submit" class="btn btn-info">submit</button>
+                </form>
+
+            </div>
+
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- register modal -->
+<div class="modal fade" id="register_modal" tabindex="-1" role="dialog"
+    aria-labelledby="login in " aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3> register</h3>
+            </div>
+            <div class="modal-body">
+                <form action="{{ url_for('register') }}" method="post">
+                    <input type="text" class="form-control" name="username" />
+                    <input type="text" class="form-control" name="email" 
+                    placeholder="email"/>
+                    <input type="password" class="form-control" name="password" 
+                    placeholder="password"/>
+                    <button type="submit" class="btn btn-default">submit</button>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="input-group">
     <input type="text" class="form-control search_words" 
     placeholder="search teams"/>
     <div class="input-group-btn">
-        <button id="search_button"><i class="glyphicon glyphicon-search"></i></button>
+        <button id="search_button">search</button>
     </div>
 </div>
 
@@ -22,41 +90,9 @@
 <div id="search_results">
 </div>
 
-<div class="loginDiv">
-    <form action="{{ url_for('login') }}" method="post">
-        <input type="text" class="form-control" name="email"
-    placeholder="email"/>
-        <input type="password" class="form-control" name="password"
-    placeholder="password"/>
-        <button type="submit" class="btn btn-default">submit</button>
-    </form>
-    <a href="{{ url_for('auth_google') }}"> google</a>
-    <a href="{{ url_for('auth_douban') }}"> douban</a>
-</div>
-<div class="registerDiv">
-    <form action="{{ url_for('register') }}" method="post">
-        <input type="text" class="form-control" name="username" />
-        <input type="text" class="form-control" name="email" 
-    placeholder="email"/>
-        <input type="password" class="form-control" name="password" 
-    placeholder="password"/>
-        <button type="submit" class="btn btn-default">submit</button>
-    </form>
-</div>
-
-{% if session.logged_in %}
-<div>
-    <a href="/profile">profile</a>
-    <a href="/logout">logout</a>
-</div>
-{% else %}
-<div class="">
-    <button class="login">login</button>
-    <button class="register">register</button>
-</div>
-{% endif %}
 {% endblock %}
 {% block script %}
+<script type="text/javascript" rel="script" src="../static/js/bootstrap.min.js"></script>
 <script type="text/javascript" rel="script" src="../static/js/home.js"></script>
 {% endblock %}
 

@@ -82,6 +82,9 @@ class User(db.Model):
     def is_member(self, team):
         return team in self.teams
 
+    def is_admin(self, team):
+        return self in team.admins
+
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     title = db.Column(db.String(180))

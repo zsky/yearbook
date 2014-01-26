@@ -25,6 +25,8 @@ def auth_register(profile):
     image_url = profile.get('image_url')
     if image_url:
         user.image_url = image_url
+    else:
+        user.image_url = app.config['DEFAULT_USER_IMG']
     db.session.add(user)
     db.session.commit()
     session['logged_in'] = True
@@ -104,6 +106,7 @@ def register():
     user = User(username = request.form['username'],
             email = request.form['email'],
             password = request.form['password'])
+    user.image_url = app.config['DEFAULT_USER_IMG']
     db.session.add(user)
     db.session.commit()
     session['logged_in'] = True
@@ -223,7 +226,7 @@ def add_team():
         if image_url:
             team.image_url = image_url
         else:
-            team.image_url = '../static/upload/default_team.png'
+            team.image_url = app.config['DEFAULT_TEAM_IMG']
         team.admins.append(user)
         user.teams.append(team)
         db.session.add(team)
