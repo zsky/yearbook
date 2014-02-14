@@ -40,6 +40,7 @@ class Team(db.Model):
     events = db.relationship('Event', lazy='dynamic')
     categories = db.relationship('Category', lazy='dynamic')
     admins = db.relationship('User', lazy='dynamic', secondary=team_admins)
+    members = db.relationship('User', lazy='dynamic', secondary=team_users)
     tags = db.relationship('Tag', secondary=team_tags,
             backref=db.backref('teams', lazy='dynamic'))
 
@@ -116,5 +117,8 @@ class Message(db.Model):
     from_id = db.Column(db.Integer)
     to_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     m_type = db.Column(db.String(10))
+    join_team = db.Column(db.Integer, default=0)
     body = db.Column(db.String(180))
+    timestamp = db.Column(db.DateTime)
+    state = db.Column(db.String(8), default='unread') # read, unread
 

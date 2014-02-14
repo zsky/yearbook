@@ -129,7 +129,7 @@ def profile():
         user_id = session['user_id']
         user = User.query.get(user_id)
         teams = user.teams 
-        messages = user.messages
+        messages = user.messages.filter_by(state='unread').order_by(Message.timestamp.desc())
     else:
         return redirect(url_for('index'))
 
@@ -245,6 +245,15 @@ def add_team():
     return render_template('add_team.html',
             title = 'add_team')
     
+@app.route('/search_user', methods=['POST'])
+def search_user():
+    search_name = request.form['search_name']
+    search_user = User.query.filter_by(username=search_name)
+    has_user = User.query.filter_by(username=search_name).count() > 0
+    return render_template('user_info.html',
+            users = search_user,
+            has_user = has_user)
+
 @app.route('/show_team/<int:team_id>')
 def show_team(team_id):
     is_member = False
@@ -308,6 +317,15 @@ def admin_team(team_id):
             team = team,
             events = team_events,
             categories = team_categories)
+
+@app.route('/show_members', methods=['POST'])
+def show_members():
+    t_id = request.form['t_id']
+    team = Team.query.get(t_id)
+    members = team.members
+    return render_template('members.html',
+            team = team,
+            members = members)
 
 @app.route('/add_category', methods = ['GET', 'POST'])
 def add_category():
@@ -411,17 +429,30 @@ def send_message():
         user = User.query.get(user_id)
     else:
         return redirect(url_for('index'))
-    m_body = request.form['m_body']
-    t_id = request.form['t_id']
-    team = Team.query.get(t_id)
-    team_admins = team.admins
-    for admin in team_admins:
-        print admin.id
+    m_type = request.form['m_type']
+    # user apply for joining team
+    if m_type == 'join_team':
+        m_body = request.form['m_body']
+        team_id = request.form['t_id']
+        team = Team.query.get(team_id)
+        team_admins = team.admins
+        for admin in team_admins:
+            print admin.id
+            m = Message(from_id = user_id,
+                  to_id = admin.id,
+                 m_type = m_type,
+                 join_team = team_id,
+                 body = m_body)
+            db.session.add(m)
+    elif m_type == 'invite':
+        print 'invite'
         m = Message(from_id = user_id,
-                to_id = admin.id,
-                m_type = 'join_team',
-                body = m_body)
+                to_id = request.form['to_id'],
+                m_type = m_type,
+                join_team = request.form['t_id'], 
+                body = 'invite you')
         db.session.add(m)
+
 
     db.session.commit()
     res = { "f_id": m.from_id,
@@ -429,3 +460,29 @@ def send_message():
             "m_body": m.body
             }
     return json.dumps(res)  
+
+@app.route('/deal_message', methods=['POST'])
+def deal_message():
+    if 'logged_in' in session:
+        pass
+    else:
+        return redirect(url_for('index'))
+
+    m_id = request.form['m_id']
+    message = Message.query.get(m_id)
+    message.state = 'read'
+
+    if message.m_type == 'invite':
+        m_user = User.query.get(message.to_id)
+    elif message.m_type == 'join_team':
+        m_user = User.query.get(message.from_id)
+
+    if request.form['command'] == 'accept':
+        m_team = Team.query.get(message.join_team)
+        m_user.teams.append(m_team)
+        db.session.add(m_team)
+
+    db.session.add(message)
+    db.session.commit()
+
+    return 'ok'

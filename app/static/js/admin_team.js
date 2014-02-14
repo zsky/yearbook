@@ -10,29 +10,54 @@ $(document).ready(function(){
         forceParse: 0,
     });
 
-/*    $('#add_event_button').on('click', function(){
-        var event_time = $('.event_time').val();
-        var event_title = $('.event_title').val();
-        var event_content = $('.event_content').val();
-        var team_id = $(this).attr('value');
-        var event_photo = $('.event_photo').val();
-        console.log(event_photo);
+    $(".show_members").on("click", function(){
+        var t_id = $(this).attr('value');
+
         $.ajax({
             type: "POST",
-            url: "/add_event",
-            data: {
-                time: event_time,
-                title: event_title,
-                content: event_content,
-                team_id: team_id,
-                photo: event_photo
-            }
-        }).done(function(){
-            console.log('ok');
-        }).fail(function(msg){
-            console.log('failed');
-        })
+            url: "/show_members",
+            data: { t_id: t_id }
+        }).done(function(members){
+            $("#team_members").html(members);
+        }).fail(function(){
+            console.log('fail');
+        });
+    });
 
-    });  */
+    $(".search_user").on("click", function(){
+        var search_name = $("#search_username").val();
+        console.log(search_name);
+
+        $.ajax({
+            type: "POST",
+            url: "/search_user",
+            data: { search_name: search_name }
+        }).done(function(user_info){
+                $("#search_user_result").html(user_info);
+        }).fail(function(){
+            console.log('fail');
+        });
+    });
+
+    $("#search_user_result").on("click", ".invite_user", function(){
+        console.log('hehe');
+        var invite_id = $(this).attr('value');
+        var team_id = $("#search_user_result").attr('value');
+
+        console.log(invite_id);
+
+        $.ajax({
+            type: "POST",
+            url: "/send_message",
+            data: { m_type: 'invite', 
+                t_id: team_id, 
+                to_id: invite_id
+            }
+        }).done(function(user_info){
+                $("#search_user_result").html(user_info);
+        }).fail(function(){
+            console.log('fail');
+        });
+    });
 
 })

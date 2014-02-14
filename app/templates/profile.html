@@ -21,7 +21,11 @@
 <div>
     <p> --messages</p>
     {% for m in messages %}
-    <p> {{ m.body }}</p>
+    <div id="{{m.id}}">
+        <p> {{ m.body }} </p>
+        <button class="accept_message"> accept</button>
+        <button class="reject_message"> reject</button>
+    </div>
     {% endfor %}
 </div>
 <div>
@@ -42,5 +46,6 @@
 <script type="text/javascript" rel="script"
     src="../static/js/jqueryUI/jquery.ui.draggable.js"></script>
 <script type="text/javascript" rel="script" src="../static/js/upload_photo.js"></script>
+<script type="text/javascript" rel="script" src="../static/js/profile.js"></script>
 {% endblock %}
 
