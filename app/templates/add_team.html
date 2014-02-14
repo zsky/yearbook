@@ -6,7 +6,7 @@
 {% block content %}
 <div>
 
-    <img class="avatar" src="../static/upload/default_team.png" width="60"
+    <img class="avatar" src="../static/img/default_team.png" width="60"
     height="60"/>
     <input type="file" class="form-control" id="photo_input" accept="image/*"  />
     <div id="preview_div">
@@ -18,10 +18,10 @@
     <form action="{{url_for('add_team')}}" method="POST">
         <input type="text" class="hide img_url" name="image_url"/>
     <label> title
-        <input type="text" class="form-control" name="tags"
-        placeholder="tags"/>
         <input type="text" class="form-control" name="title"
         placeholder="title"/>
+        <input type="text" class="form-control" name="tags"
+        placeholder="tags"/>
     </label>
     <label>introduction
         <textarea name="intro" class="form-control" rows="3">

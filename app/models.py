@@ -29,6 +29,7 @@ class Tag(db.Model):
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     title = db.Column(db.String(40))
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
     events = db.relationship('Event', lazy='dynamic')
 
 class Team(db.Model):
@@ -37,6 +38,7 @@ class Team(db.Model):
     intro = db.Column(db.String(240))
     image_url = db.Column(db.String(92), default='')
     events = db.relationship('Event', lazy='dynamic')
+    categories = db.relationship('Category', lazy='dynamic')
     admins = db.relationship('User', lazy='dynamic', secondary=team_admins)
     tags = db.relationship('Tag', secondary=team_tags,
             backref=db.backref('teams', lazy='dynamic'))

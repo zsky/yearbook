@@ -6,8 +6,8 @@
 {% block content %}
 <div class="header">
 {% if session.logged_in %}
-    <a href="/profile">profile</a>
-    <a href="/logout">logout</a>
+    <a class="pull-right" href="/profile">profile</a>
+    <a class="pull-right" href="/logout">logout</a>
 {% else %}
     <a class="pull-right" data-toggle="modal"
         data-target="#login_modal">login</a>
@@ -54,6 +54,8 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">&times;</button>
                 <h3> register</h3>
             </div>
             <div class="modal-body">
@@ -73,6 +75,7 @@
     </div>
 </div>
 
+<div class="clear_float"></div>
 <div class="input-group">
     <input type="text" class="form-control search_words" 
     placeholder="search teams"/>
@@ -81,13 +84,17 @@
     </div>
 </div>
 
-<div>
+<div class="row">
+<div class="col-md-3">
     <p> --tags</p>
     {% for t in tags %}
-    <button class="tag_teams" value="{{t.id}}">{{ t.title }}</button>
+    <p><button class="tag_teams" value="{{t.id}}">{{ t.title }}</button></p>
     {%  endfor %}
 </div>
-<div id="search_results">
+<div class="col-md-9">
+    <div id="search_results" class="row">
+    </div>
+</div>
 </div>
 
 {% endblock %}

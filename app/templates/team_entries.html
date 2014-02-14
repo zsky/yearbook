@@ -1,5 +1,5 @@
 {% for t in teams %}
-<div>
+<div class="col-md-4 team_intro">
     <p> --team</p>
     <img src="{{ t.image_url }}" width="60" height="60"/>
     <a href="{{ url_for('show_team', team_id=t.id) }}">{{ t.title }}</a>

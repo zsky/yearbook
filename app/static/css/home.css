@@ -36,3 +36,10 @@
     width: 28px;
     height: 28px;
 }
+.clear_float{
+    clear: both;
+}
+.team_intro{
+    width: 290px;
+    height: 180px;
+}

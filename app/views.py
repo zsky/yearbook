@@ -130,14 +130,14 @@ def profile():
         user = User.query.get(user_id)
         teams = user.teams 
         messages = user.messages
-        print messages
     else:
         return redirect(url_for('index'))
 
     return render_template('profile.html',
             title = 'profile',
             user = user,
-            teams = teams)
+            teams = teams,
+            messages = messages)
 
 @app.route('/update_photo', methods = ['POST'])
 def update_photo():
@@ -297,6 +297,7 @@ def admin_team(team_id):
     
     team = Team.query.get(team_id)
     team_events = team.events.order_by(Event.timestamp.desc())
+    team_categories = team.categories
         
 
     if user not in team.admins:
@@ -305,7 +306,27 @@ def admin_team(team_id):
     return render_template('admin_team.html',
             title = 'admin_team',
             team = team,
-            events = team_events)
+            events = team_events,
+            categories = team_categories)
+
+@app.route('/add_category', methods = ['GET', 'POST'])
+def add_category():
+    if 'user_id' in session:
+        user_id = session['user_id']
+    else:
+        return redirect(url_for('index'))
+
+    t_id = request.form['team_id']
+    # add catogriess
+    add_categories = request.form['categories'].split(',')
+    for c in add_categories:
+        c = c.strip()
+        if Category.query.filter_by(title=c).count() == 0 and c:
+            new_c = Category(title = c, team_id = t_id)
+            db.session.add(new_c)
+    db.session.commit()
+
+    return redirect(url_for('admin_team', team_id=t_id)) 
 
 @app.route('/add_event', methods = ['POST'])
 def add_event():
@@ -314,7 +335,8 @@ def add_event():
     else:
         return redirect(url_for('index'))
 
-    t_id = request.form['team_id'],
+    print 'add event func'
+    t_id = request.form['team_id']
     team_id = int(t_id[0])
 
     event_date = datetime.strptime(request.form['event_time'], '%d %B %Y')
@@ -326,12 +348,16 @@ def add_event():
             team_id = team_id,
             author_id = user_id
             )
+    # category
+    c_id = request.form['category_id'],
+    if c_id:
+        event.category_id = c_id
     db.session.add(event)
     db.session.commit()
 
     date_path = event_date.strftime('%Y-%m')
     save_path = os.path.join(app.config['UPLOAD_FOLDER'], 
-                'team-'+str(team_id), date_path)
+            'team-'+str(team_id), date_path)
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
@@ -339,7 +365,7 @@ def add_event():
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'],
-                'team-'+str(team_id), date_path, filename))
+            'team-'+str(team_id), date_path, filename))
 
         photo = Photo(
                 path = os.path.join('team-'+str(team_id), date_path, filename),
@@ -376,7 +402,7 @@ def add_comment():
     db.session.add(c)
     db.session.commit()
     return render_template('comments.html',
-                comments = [c])
+            comments = [c])
 
 @app.route('/send_message', methods=['POST'])
 def send_message():
@@ -389,10 +415,8 @@ def send_message():
     t_id = request.form['t_id']
     team = Team.query.get(t_id)
     team_admins = team.admins
-    print team_admins
     for admin in team_admins:
         print admin.id
-        print user in team.admins
         m = Message(from_id = user_id,
                 to_id = admin.id,
                 m_type = 'join_team',
@@ -400,4 +424,8 @@ def send_message():
         db.session.add(m)
 
     db.session.commit()
-    return 'ok'
+    res = { "f_id": m.from_id,
+            "t_id": m.to_id,
+            "m_body": m.body
+            }
+    return json.dumps(res)  
