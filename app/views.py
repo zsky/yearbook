@@ -257,18 +257,22 @@ def search_user():
 @app.route('/show_team/<int:team_id>')
 def show_team(team_id):
     is_member = False
+    is_admin = False
     team = Team.query.get(team_id)
     if 'user_id' in session:
+        print 'user_id',session['user_id']
         user_id = session['user_id']
         user = User.query.get(user_id)
         is_member = user.is_member(team)
+        is_admin = user.is_admin(team)
 
-    team = Team.query.get(team_id)
+    print 'is_admin', is_admin
     team_events = team.events
     return render_template('show_team.html',
             title = 'show_team',
             team = team,
             is_member = is_member,
+            is_admin = is_admin,
             events = team_events)
 
 @app.route('/tag_teams', methods=['POST'])
@@ -346,6 +350,15 @@ def add_category():
 
     return redirect(url_for('admin_team', team_id=t_id)) 
 
+@app.route('/del_event/<int:e_id>')
+def del_event(e_id):
+    e = Event.query.get(e_id)
+    if e != None:
+        db.session.delete(e)
+        db.session.commit()
+    return 'ok'
+
+
 @app.route('/add_event', methods = ['POST'])
 def add_event():
     if 'user_id' in session:
@@ -354,10 +367,14 @@ def add_event():
         return redirect(url_for('index'))
 
     print 'add event func'
+    print request.form
     t_id = request.form['team_id']
     team_id = int(t_id[0])
 
-    event_date = datetime.strptime(request.form['event_time'], '%d %B %Y')
+    if request.form['event_time']:
+        event_date = datetime.strptime(request.form['event_time'], '%d %B %Y')
+    else:
+        event_date = datetime.now()
 
     event = Event(
             title = request.form['event_title'],
@@ -368,7 +385,9 @@ def add_event():
             )
     # category
     c_id = request.form['category_id'],
-    if c_id:
+    print 'c_id', c_id
+    if c_id[0]:
+        print 'has category'
         event.category_id = c_id
     db.session.add(event)
     db.session.commit()

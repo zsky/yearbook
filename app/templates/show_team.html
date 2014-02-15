@@ -4,15 +4,19 @@
 {% endblock %}
 
 {% block content %}
-<h3 class="text-center"> Yearbook  </h3>
+<h3 class="text-center"><a href="{{url_for('index')}}">Yearbook</a></h3>
+{% if is_admin %}
 <div>
     <a href="/admin_team/{{ team.id }}">manage team</a>
 </div>
+{% endif %}
 <div>
     <img src="{{ team.image_url }}" width="60" height="60"/>
     <p>{{ team.title }}</p>
     <p>{{ team.intro }}</p>
-    <a  data-toggle="modal" data-target="#send_message">send message</a>
+    {% if not is_member %}
+    <a  data-toggle="modal" data-target="#send_message">join the team</a>
+    {% endif %}
 </div>
 
 <!-- send message modal -->

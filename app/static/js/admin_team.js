@@ -60,4 +60,19 @@ $(document).ready(function(){
         });
     });
 
+    $(".del_event").on("click", function(){
+        var event_id = $(this).attr('value');
+        var event_div = $("#e-" + event_id);
+        console.log(event_id);
+
+        $.ajax({
+            type: "GET",
+            url: "/del_event/" + event_id,
+        }).done(function(res){
+            event_div.remove();
+        }).fail(function(){
+            console.log('fail');
+        });
+    });
+
 })

@@ -38,7 +38,8 @@ $(document).ready(function(){
         $.ajax({
             type: "POST",
             url: "/send_message",
-            data: { t_id: t_id,
+            data: { m_type: 'join_team',
+                t_id: t_id,
                 m_body: m_body }
         }).done(function(res){
             console.log(res);
