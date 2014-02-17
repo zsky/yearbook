@@ -4,11 +4,11 @@ import os
 SECRET_KEY = 'you_will_never_guess'
 
 # 这是我的本地数据库配置
-if os.environ.get('DATABASE_URI') is None:
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:hs1019@localhost/yearbook' 
+if os.environ.get('DATABASE_URL') is None:
+    SQLALCHEMY_DATABASE_URI = 'mysql://root:hs1019@localhost/yearbook' 
 else:
 # heroku cloud dababase
-    SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URI']
+    SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
 
 # upload files setting
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'app/static/upload')
