@@ -4,7 +4,6 @@ from flask import render_template, redirect, url_for, session,\
 from werkzeug import secure_filename
 from app import app, db
 from models import Team, User, Event, Comment, Photo, Tag, Category, Message
-from forms import RegisterForm, LoginForm, CommentForm
 from datetime import datetime, timedelta
 import json, md5, os, re
 import uuid
