@@ -11,5 +11,5 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-from app import views, models, forms
+from app import views, models
 
