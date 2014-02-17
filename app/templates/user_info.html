@@ -1,0 +1,10 @@
+{% if not has_user %}
+<p> no users</p>
+{% endif %}
+{% for u in users %}
+<div>
+    <p> --user</p>
+    {{ u.username }}
+    <button class="invite_user" value="{{u.id}}">invite </button>
+</div>
+{% endfor %}

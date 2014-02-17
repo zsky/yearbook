@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block style %}
+<link type="text/css" rel="stylesheet" href="../static/css/photo.css"/>
+{% endblock %}
+
+{% block content %}
+<div>
+
+    <img class="avatar" src="../static/img/default_team.png" width="60"
+    height="60"/>
+    <input type="file" class="form-control" id="photo_input" accept="image/*"  />
+    <div id="preview_div">
+    <div id="preview">
+        <div class="crop_div"></div>
+    </div>
+    <button class="upload_photo">confirm</button>
+    </div>
+    <form action="{{url_for('add_team')}}" method="POST">
+        <input type="text" class="hide img_url" name="image_url"/>
+    <label> title
+        <input type="text" class="form-control" name="title"
+        placeholder="title"/>
+        <input type="text" class="form-control" name="tags"
+        placeholder="tags"/>
+    </label>
+    <label>introduction
+        <textarea name="intro" class="form-control" rows="3">
+        </textarea>
+    </label>
+    <button  type="submit" class="btn btn-default">submit</button>
+    </form>
+</div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript" rel="script"
+    src="../static/js/jqueryUI/jquery.ui.core.js"></script>
+<script type="text/javascript" rel="script"
+    src="../static/js/jqueryUI/jquery.ui.widget.js"></script>
+<script type="text/javascript" rel="script"
+    src="../static/js/jqueryUI/jquery.ui.mouse.js"></script>
+<script type="text/javascript" rel="script"
+    src="../static/js/jqueryUI/jquery.ui.draggable.js"></script>
+<script type="text/javascript" rel="script" src="../static/js/add_team.js"></script>
+{% endblock %}
+

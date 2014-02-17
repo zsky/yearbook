@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block style %}
+<link type="text/css" rel="stylesheet"
+href="../static/css/bootstrap-datetimepicker.min.css"/>
+{% endblock %}
+
+{% block content %}
+<h3 class="text-center"><a href="{{url_for('index')}}">Yearbook</a></h3>
+<div>
+    <p><a href="{{ url_for('show_team', team_id=team.id) }}">{{ team.title }}</a></p>
+    <p>{{ team.intro }}</p>
+</div>
+<div class="">
+    <div class="add_category_div">
+    <form action="{{ url_for('add_category')}}" method="POST"
+        class="form-horizontal">
+        <label>add category 
+            <input type="text" class="form-control" name="categories" 
+            placeholder="categories">
+        </label>
+        <input type="text" class="hide" name="team_id" value="{{team.id}}">
+        <input type="submit"  class="btn btn-default" value="add">
+    </form>
+    </div>
+
+    <div class="add_event_div">
+        <h5> add a event</h5>
+    <form action="{{url_for('add_event')}}" method="post"
+        class="form-horizontal" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="dtp_input1" class="col-md-2 control-label">Event DateTime Picking</label>
+                <div class="input-group date form_date col-md-5"
+                    data-date="" data-date-format="dd MM yyyy" data-link-field="dtp_input1">
+                    <input  class="form-control" name="event_time" size="16"
+                    type="text" readonly >
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon
+                            glyphicon-calendar"></span></span>
+                </div>
+                <input type="hidden" id="dtp_input1" value="" /><br/>
+            </div>
+
+            <div>
+        <label>photo 
+            <input type="file" class="form-control" name="file"
+            accept="image/*" />
+        </label>
+            </div>
+            <div>
+        <label> title
+            <input type="text" class="form-control" name="event_title" 
+            placeholder="title" required/>
+        </label>
+            </div>
+            <div>
+        <label> category 
+            <select class="form-control" name="category_id" 
+                placeholder="category"/>
+                <option value="">not classified</option>
+                {% for c in categories %}
+                <option value="{{c.id}}">{{ c.title }}</option>
+                {% endfor %}
+            </select>
+        </label>
+            </div>
+            <div>
+        <label>content
+            <textarea  class="form-control" name="event_content" rows="9" required></textarea>
+        </label>
+            </div>
+        <input type="text" class="hide" name="team_id" value="{{team.id}}"/>
+        <button type="submit"  class="btn btn-default">go</button>
+    </form>
+</div>
+
+</div>
+
+<!-- team -members -->
+<div>
+    <input type="text" id="search_username" class="form-control"/>
+    <button class="search_user">search_user</button>
+    <div id="search_user_result" value="{{team.id}}">
+    </div>
+</div>
+<div>
+    <button class="show_members" value="{{ team.id }}">show members</button>
+    <div id="team_members">
+    </div>
+</div>
+
+<div>
+    {% for e in events %}
+    <div id="e-{{e.id}}">
+        {{ e.timestamp.strftime('%Y-%m-%d') }}
+        {{ e.title }} 
+        {{ e.content }}
+        {% for p in e.photos %}
+        {{ p.path }}
+        {% endfor %}
+        <button class="del_event" value="{{e.id}}" > del</button>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript" rel="script"
+    src="../static/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" rel="script"
+    src="../static/js/admin_team.js"></script>
+{% endblock %}
+

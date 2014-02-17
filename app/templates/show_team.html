@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block style %}
+<link type="text/css" rel="stylesheet" href="../static/css/o.css"/>
+{% endblock %}
+
+{% block content %}
+<h3 class="text-center"><a href="{{url_for('index')}}">Yearbook</a></h3>
+{% if is_admin %}
+<div>
+    <a href="/admin_team/{{ team.id }}">manage team</a>
+</div>
+{% endif %}
+<div>
+    <img src="{{ team.image_url }}" width="60" height="60"/>
+    <p>{{ team.title }}</p>
+    <p>{{ team.intro }}</p>
+    {% if not is_member %}
+    <a  data-toggle="modal" data-target="#send_message">join the team</a>
+    {% endif %}
+</div>
+
+<!-- send message modal -->
+<div class="modal fade" id="send_message" tabindex="-1" role="dialog"
+    aria-labelledby="send_message" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">&times;</button>
+                <h3> send message </h3>
+            </div>
+            <div class="modal-body">
+                <textarea class="form-control m_body" rows="3"
+                    placeholder="message"></textarea>
+                <button class="send_message" value="{{ team.id }}"
+                    data-dismiss="modal">send</button>
+            </div>
+
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    {% for e in events %}
+    {{ e.timestamp }}
+    {{ e.title }} 
+    {{ e.content }}
+    {% if is_member %}
+        <button class="load_comments" value="{{ e.id }}">comment</button>
+        <div>
+        <input type="text" class="form-control c_body"/>
+        <button class="add_comment" value="{{ e.id }}">send</button>
+        <div id="event-{{e.id}}"></div>
+        </div>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript" rel="script" src="../static/js/bootstrap.min.js"></script>
+<script type="text/javascript" rel="script" src="../static/js/show_team.js"></script>
+{% endblock %}
+

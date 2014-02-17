@@ -1,0 +1,9 @@
+{% for m in members %}
+<div>
+    <p> --member</p>
+    {{ m.username }}
+    {% if m.is_admin(team) %}
+     -- admin
+     {% endif %}
+</div>
+{% endfor %}
