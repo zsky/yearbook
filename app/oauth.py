@@ -72,8 +72,12 @@ def get_token(auth_server, code):
             }
     req = MyRequest(auth_server['token_url'], data, 'POST')
     print '1' ,req.url
-    res = urllib2.urlopen(req.request()).read()
-    print '2' , res
+    try:
+        res = urllib2.urlopen(req.request()).read()
+    except  urllib2.URLError, e:
+        print e.reason
+        return None
+    print '2'
     token = json.loads(res)['access_token']
     print '3', token
     return token

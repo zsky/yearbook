@@ -33,13 +33,15 @@
 
             </div>
             <div class="modal-body">
-                <form action="{{ url_for('login') }}" method="post">
-                    <input type="text" class="form-control" name="email"
+
+                <div id="login_div">
+                    <input type="text" class="form-control email"
                     placeholder="email"/>
-                    <input type="password" class="form-control" name="password"
+                    <input type="password" class="form-control password"
                     placeholder="password"/>
-                    <button type="submit" class="btn btn-info">submit</button>
-                </form>
+                    <p class="show_error"> </p>
+                    <button class="btn btn-info login_btn">submit</button>
+                </div>
 
             </div>
 
@@ -50,7 +52,7 @@
 </div>
 <!-- register modal -->
 <div class="modal fade" id="register_modal" tabindex="-1" role="dialog"
-    aria-labelledby="login in " aria-hidden="true">
+    aria-labelledby="login in " aria-hidden="false">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -59,14 +61,17 @@
                 <h3> register</h3>
             </div>
             <div class="modal-body">
-                <form action="{{ url_for('register') }}" method="post">
-                    <input type="text" class="form-control" name="username" />
-                    <input type="text" class="form-control" name="email" 
+
+                <div id="register_div">
+                    <input type="text" class="form-control username" />
+                    <input type="text" class="form-control email" 
                     placeholder="email"/>
-                    <input type="password" class="form-control" name="password" 
+                    <input type="password" class="form-control password" 
                     placeholder="password"/>
-                    <button type="submit" class="btn btn-default">submit</button>
-                </form>
+                    <p class="show_error"> </p>
+                    <button class="btn btn-default register_btn">submit</button>
+                </div>
+
             </div>
 
             <div class="modal-footer">
@@ -101,5 +106,6 @@
 {% block script %}
 <script type="text/javascript" rel="script" src="../static/js/bootstrap.min.js"></script>
 <script type="text/javascript" rel="script" src="../static/js/home.js"></script>
+<script type="text/javascript" rel="script" src="../static/js/ajax_log.js"></script>
 {% endblock %}
 

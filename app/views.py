@@ -41,6 +41,8 @@ def auth_douban_callback():
     if request.method == 'GET':
         code = request.args.get('code', '')
         token = get_token(douban, code)
+        if not token:
+            return redirect(url_for('index'))
         info_res = get_info(douban, token)
         info_json = json.loads(info_res)
         profile = {
@@ -60,6 +62,8 @@ def auth_google_callback():
     if request.method == 'GET':
         code = request.args.get('code', '')
         token = get_token(google, code)
+        if not token:
+            return redirect(url_for('index'))
         info_res = get_info(google, token)
         info_json = json.loads(info_res)
         plus_name = info_json['displayName']
@@ -83,12 +87,20 @@ def auth_google_callback():
 @app.route('/login', methods = ['POST'])
 def login():
     user = User.query.filter_by(email = request.form['email']).first()
-    if user and user.check_password(request.form['password']):
-        session['logged_in'] = True
-        session['user_id'] = user.id
-        return redirect(url_for('profile'))
+    if not user:
+        res = { "succ": False, 
+                "msg": "wrong email"}
+        return json.dumps(res)
+    if not user.check_password(request.form['password']):
+        res = { "succ": False, 
+                "msg": "wrong password"}
+        return json.dumps(res)
 
-    return redirect(url_for('index'))
+    session['logged_in'] = True
+    session['user_id'] = user.id
+    res = { "succ": True, 
+             "msg": "ok"}
+    return json.dumps(res)
 
 @app.route('/logout')
 def logout():
@@ -102,6 +114,10 @@ def logout():
 
 @app.route('/register', methods = ['POST'])
 def register():
+    if User.query.filter_by(email=request.form['email']).count() > 0:
+        res = { "succ": False, 
+                "msg": "email userd"}
+        return json.dumps(res)
     user = User(username = request.form['username'],
             email = request.form['email'],
             password = request.form['password'])
@@ -110,9 +126,20 @@ def register():
     db.session.commit()
     session['logged_in'] = True
     session['user_id'] = user.id
-    return redirect(url_for('profile'))
+    res = { "succ": True,
+            "msg": "ok"}
+    return json.dumps(res)
 
-
+@app.route('/check_info', methods = ['POST'])
+def check_info():
+    if User.query.filter_by(email=request.form['info']).count() > 0:
+        res = { "succ": False, 
+                "msg": "email userd"}
+        return json.dumps(res)
+    else:
+        res = { "succ": True,
+             "msg": "ok"}
+        return json.dumps(res)
 
 @app.route('/')
 @app.route('/index')
@@ -400,8 +427,9 @@ def add_event():
     file = request.files['file']
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
+        img_name = str(uuid.uuid4()) + '.' + filename.rsplit('.', 1)[1]
         file.save(os.path.join(app.config['UPLOAD_FOLDER'],
-            'team-'+str(team_id), date_path, filename))
+            'team-'+str(team_id), date_path, img_name))
 
         photo = Photo(
                 path = os.path.join('team-'+str(team_id), date_path, filename),
