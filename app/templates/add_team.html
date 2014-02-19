@@ -15,6 +15,7 @@
     </div>
     <button class="upload_photo">confirm</button>
     </div>
+
     <form action="{{url_for('add_team')}}" method="POST">
         <input type="text" class="hide img_url" name="image_url"/>
     <label> title
@@ -23,12 +24,17 @@
         <input type="text" class="form-control" name="tags"
         placeholder="tags"/>
     </label>
+    <br/>
     <label>introduction
         <textarea name="intro" class="form-control" rows="3">
         </textarea>
     </label>
     <button  type="submit" class="btn btn-default">submit</button>
+    {% if error %}
+    <p> {{ error }}</p>
+    {% endif %}
     </form>
+
 </div>
 {% endblock %}
 {% block script %}

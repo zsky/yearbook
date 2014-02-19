@@ -245,6 +245,11 @@ def add_team():
         return redirect(url_for('index'))
 
     if request.method == 'POST':
+        if Team.query.filter_by(title=request.form['title']).count() > 0:
+            return render_template('add_team.html',
+                    title = 'add_team',
+                    error = 'this title has used')
+
         team = Team(title = request.form['title'],
             intro = request.form['intro'])
 
