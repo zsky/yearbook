@@ -5,7 +5,7 @@ from werkzeug import secure_filename
 from app import app, db
 from models import Team, User, Event, Comment, Photo, Tag, Category, Message
 from datetime import datetime, timedelta
-import json, md5, os, re
+import time, json, md5, os, re
 import uuid
 from PIL import Image
 from oauth import google, douban, get_auth, get_token, get_info
@@ -532,3 +532,16 @@ def deal_message():
     db.session.commit()
 
     return 'ok'
+
+@app.route('/push_message', methods=['POST'])
+def push_message():
+    if 'user_id' in session:
+        user_id = session['user_id']
+        user = User.query.get(user_id)
+        messages = user.messages.filter_by(state='unread').order_by(Message.timestamp.desc())
+        time.sleep(0.5);
+        return render_template('messages.html',
+                messages = messages)
+    else:
+        return redirect(url_for('index'))
+

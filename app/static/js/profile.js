@@ -1,5 +1,21 @@
 $(document).ready(function(){
 
+    function push_message(){
+
+        $.ajax({
+            type: "POST",
+            url: "/push_message",
+            data: { time: '90'}
+        }).done(function(res){
+            $('#show_messages').html(res);
+            push_message();
+        }).fail(function(){
+            console.log('fail');
+        });
+    };
+
+    push_message();
+
     $(".accept_message").on("click", function(){
         var message_div = $(this).parent();
         var message_id = message_div.attr("id");

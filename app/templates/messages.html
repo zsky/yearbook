@@ -1,0 +1,7 @@
+{% for m in messages %}
+<div id="{{m.id}}">
+    <p> {{ m.body }} </p>
+    <button class="accept_message"> accept</button>
+    <button class="reject_message"> reject</button>
+</div>
+{% endfor %}
