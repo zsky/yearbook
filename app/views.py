@@ -43,6 +43,7 @@ def auth_douban_callback():
         token = get_token(douban, code)
         if not token:
             return redirect(url_for('index'))
+
         info_res = get_info(douban, token)
         info_json = json.loads(info_res)
         profile = {
@@ -64,6 +65,7 @@ def auth_google_callback():
         token = get_token(google, code)
         if not token:
             return redirect(url_for('index'))
+
         info_res = get_info(google, token)
         info_json = json.loads(info_res)
         plus_name = info_json['displayName']

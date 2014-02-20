@@ -43,10 +43,10 @@
 </div>
 
 <div>
-    {% for e in events %}
+    {% for index, e in enumerate(events) %}
     {{ e.timestamp }}
     {{ e.title }} 
-    {{ e.content }}
+    {{ index, e.content }}
     {% if is_member %}
         <button class="load_comments" value="{{ e.id }}">comment</button>
         <div>

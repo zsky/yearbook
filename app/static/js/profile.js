@@ -1,5 +1,6 @@
 $(document).ready(function(){
 
+
     function push_message(){
 
         $.ajax({
@@ -15,6 +16,7 @@ $(document).ready(function(){
     };
 
     push_message();
+
 
     $(".accept_message").on("click", function(){
         var message_div = $(this).parent();

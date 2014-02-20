@@ -1,4 +1,6 @@
-upload
 venv
 *.pyc
 *.swp
+*.swo
+upload
+

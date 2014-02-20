@@ -71,15 +71,12 @@ def get_token(auth_server, code):
             'grant_type': 'authorization_code'
             }
     req = MyRequest(auth_server['token_url'], data, 'POST')
-    print '1' ,req.url
     try:
         res = urllib2.urlopen(req.request()).read()
     except  urllib2.URLError, e:
         print e.reason
         return None
-    print '2'
     token = json.loads(res)['access_token']
-    print '3', token
     return token
 
 def get_info(auth_server, token):
@@ -88,6 +85,5 @@ def get_info(auth_server, token):
             }
     req = MyRequest(auth_server['info_url'], headers=headers)
     res = urllib2.urlopen(req.request()).read()
-    print res
     return res
 
