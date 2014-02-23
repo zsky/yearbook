@@ -1,0 +1,19 @@
+.btn-group-vertical{
+	width: 200px;
+}
+.header{
+	margin: 10px auto;
+}
+h1{
+	text-align: center;
+}
+.add_event_div,.add_category_div,.manage_events_div,.manage_member_div{
+	position: absolute;
+	margin: -280px 50px 20px 300px;
+}
+.add_event_div,.add_category_div,.manage_member_div{
+	background-color: #5cb85c;
+	padding: 10px 10px;
+	border-radius: 5px;
+	color: #FFF;
+}

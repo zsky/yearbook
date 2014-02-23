@@ -4,37 +4,44 @@
 {% endblock %}
 
 {% block content %}
-<h3 class="text-center"> Yearbook  </h3>
-<p> {{ user.username }}</p>
-<img class="avatar" src="{{ user.image_url }}" width="48" height="48"/>
-<div>
-
-    <input type="file" class="form-control" id="photo_input" accept="image/*"  />
-    <div id="preview_div">
-        <div id="preview">
-            <div class="crop_div"></div>
+<div id="profile_header">
+    <h3 class="profile_header"> 用户管理 </h3>
+</div>
+ <center>
+    <div id="profile_userinfo">
+        <p id="username"> {{ user.username }}</p>
+        <img class="avatar" src="{{ user.image_url }}" width="170" height="170"/>
+        <span id="uploadImg">
+            <input type="file" class="form-control" id="photo_input" accept="image/*"  />
+            <a href="#">更改头像</a>
+        </span>
+        <div id="preview_div">
+            <div id="preview">
+                <div class="crop_div"></div>
+            </div>
+            <button class="upload_photo">上传图片</button>
         </div>
-        <button class="upload_photo">upload photo</button>
+    
+        <div id="profile_teaminfo">
+            <h5> 我的团队 </h5>
+            {% for t in teams %}
+            <a href="/show_team/{{ t.id }}">{{ t.title }}</a>
+            {% endfor %}
+        </div>
+        <a href="{{ url_for('add_team') }}">创建团队</a>
     </div>
-</div>
-
-<p> --messages</p>
-<div id="show_messages">
-    {% for m in messages %}
-    <div id="{{m.id}}">
+    
+    <div id="profile_messages">
+        <p id="message">消息</p>
+        {% for m in messages %}
+        <div id="{{m.id}}">
         <p> {{ m.body }} </p>
-        <button class="accept_message"> accept</button>
-        <button class="reject_message"> reject</button>
+        <button class="btn btn-success accept_message"> accept</button>
+        <button class="btn btn-danger reject_message"> reject</button>
     </div>
     {% endfor %}
-</div>
-<div>
-    <h5> my teams</h5>
-    {% for t in teams %}
-    <a href="/show_team/{{ t.id }}">{{ t.title }}</a>
-    {% endfor %}
-</div>
-<a href="{{ url_for('add_team') }}">create a team</a>
+    </div>
+ </center>
 {% endblock %}
 {% block script %}
 <script type="text/javascript" rel="script"

@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 {% block style %}
-<link type="text/css" rel="stylesheet" href="../static/css/o.css"/>
+<!--<link type="text/css" rel="stylesheet" href="../static/css/o.css"/>-->
+<link rel="stylesheet" type="text/css" href="../static/css/x.css">
 {% endblock %}
 
 {% block content %}
 <h3 class="text-center"><a href="{{url_for('index')}}">Yearbook</a></h3>
 {% if is_admin %}
 <div>
-    <a href="/admin_team/{{ team.id }}">manage team</a>
+    <a href="/admin_team/{{ team.id }}" style="font-size:16px">管理团队</a>
 </div>
 {% endif %}
 <div>
@@ -42,8 +43,91 @@
     </div>
 </div>
 
+<!-- view by categories -->
 <div>
-    {% for index, e in enumerate(events) %}
+    <p>
+    <a href="/show_team/{{team.id}}">all</a>
+    </p>
+    {% for c in categories %}
+    <p>
+    <a href="/show_team/{{team.id}}?c_id={{c.id}}">{{ c.title }}</a>
+    </p>
+    {% endfor %}
+</div>
+
+<!-- view by time -->
+<div>
+    <form action="{{url_for('show_team_time')}}" method="post">
+        <input type="text" class="hide" name="team_id" value="{{team.id}}"/>
+        <label> year</label>
+        <select class="form-control" name="year">
+            {% for year in year_range %}
+            <option value="{{ year }}">{{year}}</option>
+            {% endfor %}
+
+        </select>
+        <label> month</label>
+        <select class="form-control" name="month">
+            {% for month in range(1,13) %}
+            <option value="{{ month }}">{{month}}</option>
+            {% endfor %}
+
+        </select>
+        <input type="submit" class="form-control" value="go"/>
+    </form>
+</div>
+
+<!-- Timeline -->
+    <div class="fullblock blockwhite padding50">
+        <div class="container">
+            <div class="timeline-with">
+                <div class="timeline-head">
+                    <i class="icon-chat-1"></i>
+                </div>
+                <ul class="timeline">
+                    {% for e in events %}
+                    <li class="{%if loop.index is divisibleby 2%}rightli{%endif%} mypassion-animation" >
+                        <div class="timeline-post clearfix">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-date">
+                                <span>
+                                    {{ e.timestamp.date() }}
+                                </span>
+                            </div>
+                            <div class="timeline-post-wrap">
+                                <div class="post-type">
+                                    <img src="/static/upload/{{ e.photos.first().path }}" alt="{{ e.title }}">
+                                </div>
+                                <h1 class="post-title">
+                                    <a href="#">{{ e.title }} </a>
+                                </h1>
+                                <p>{{ e.content }}</p>
+                                <div class="timeline-meta">
+                                    <a href="#" class="more">
+                                        "Read More"
+                                        <i class="icon-right-open">
+                                        </i>
+                                    </a>
+                                    <a href="#" class="timeline-comments">
+                                        <i class="icon-comment">
+                                            "45"<!-- numbers of comments -->
+                                        </i>
+                                    </a> 
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    {% endfor %}
+                </ul>
+                <div class="timeline-nav"></div>
+            </div>
+        </div>
+    </div>
+    <!-- /Timeline -->
+<!--
+<div>
+    {% for e in events %}
     {{ e.timestamp }}
     {{ e.title }} 
     {{ index, e.content }}
@@ -56,6 +140,7 @@
         </div>
     {% endif %}
     {% endfor %}
+-->
 </div>
 {% endblock %}
 {% block script %}

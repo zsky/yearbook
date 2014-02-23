@@ -299,14 +299,73 @@ def show_team(team_id):
         is_member = user.is_member(team)
         is_admin = user.is_admin(team)
 
-    print 'is_admin', is_admin
-    team_events = team.events
+    c_id = request.args.get('c_id')
+    if c_id:
+        team_events = team.events.filter_by(category_id=c_id)
+    else:
+        team_events = team.events
+
+    oldest_time = team_events.order_by(Event.timestamp).first().timestamp
+    newest_time = team_events.order_by(Event.timestamp.desc()).first().timestamp
+    year_range = range(oldest_time.year, newest_time.year+1)
+    
+    team_categories = team.categories
+
     return render_template('show_team.html',
             title = 'show_team',
             team = team,
             is_member = is_member,
             is_admin = is_admin,
-            events = team_events)
+            categories = team_categories,
+            events = team_events,
+            year_range = year_range)
+
+
+@app.route('/show_team_time', methods=['POST'])
+def show_team_time():
+    is_member = False
+    is_admin = False
+    team_id = request.form['team_id']
+    team = Team.query.get(team_id)
+    if 'user_id' in session:
+        user_id = session['user_id']
+        user = User.query.get(user_id)
+        is_member = user.is_member(team)
+        is_admin = user.is_admin(team)
+
+    c_id = request.args.get('c_id')
+    if c_id:
+        team_events = team.events.filter_by(category_id=c_id)
+    else:
+        team_events = team.events
+
+
+    oldest_time = team_events.order_by(Event.timestamp).first().timestamp
+    newest_time = team_events.order_by(Event.timestamp.desc()).first().timestamp
+    year_range = range(oldest_time.year, newest_time.year+1)
+    
+    team_categories = team.categories
+
+    year = request.form['year']
+    month = request.form['month']
+    print 'year type ',type(year)
+    print year+'-1'
+    begin_time = year + '-' + month + '-1'
+    if int(month) == 12:
+        final_time = str(int(year)+1)+'-1-1'
+    else:
+        final_time = year + '-' + str(int(month)+1) + '-1'
+    team_events = team_events.filter(Event.timestamp.between(begin_time,
+        final_time))
+
+    return render_template('show_team.html',
+            title = 'show_team',
+            team = team,
+            is_member = is_member,
+            is_admin = is_admin,
+            categories = team_categories,
+            events = team_events,
+            year_range = year_range)
 
 @app.route('/tag_teams', methods=['POST'])
 def tag_teams():
@@ -383,14 +442,34 @@ def add_category():
 
     return redirect(url_for('admin_team', team_id=t_id)) 
 
-@app.route('/del_event/<int:e_id>')
-def del_event(e_id):
-    e = Event.query.get(e_id)
-    if e != None:
+@app.route('/category_teams', methods = ['POST'])
+def category_teams():
+    team_id = request.form['t_id']
+    team = Team.query.get(team_id)
+    if request.form['c_id']:
+        query_events = team.events.filter_by(category_id=request.form['c_id'])
+    else:
+        query_events = team.events
+    return render_template('query_events.html',
+                    query_events = query_events)
+
+@app.route('/del_events', methods = ['POST'])
+def del_events():
+    del_events = request.form['events'].split(',')
+    print del_events
+    for e_id in del_events:
+        e = Event.query.get(e_id)
         db.session.delete(e)
-        db.session.commit()
+    db.session.commit()
     return 'ok'
 
+@app.route('/del_category/<int:c_id>')
+def del_category(c_id):
+    c = Category.query.get(c_id)
+    if c != None:
+        db.session.delete(c)
+        db.session.commit()
+    return 'ok'
 
 @app.route('/add_event', methods = ['POST'])
 def add_event():
@@ -409,8 +488,9 @@ def add_event():
     else:
         event_date = datetime.now()
 
+    print str(request.form['event_title'].encode('utf-8'))
     event = Event(
-            title = request.form['event_title'],
+            title = str(request.form['event_title'].encode('utf-8')),
             content = request.form['event_content'],
             timestamp = event_date,
             team_id = team_id,
@@ -418,10 +498,11 @@ def add_event():
             )
     # category
     c_id = request.form['category_id'],
-    print 'c_id', c_id
+    print 'c_id', type(c_id)
     if c_id[0]:
         print 'has category'
-        event.category_id = c_id
+        event.category_id = c_id[0]
+    print event
     db.session.add(event)
     db.session.commit()
 
@@ -439,7 +520,7 @@ def add_event():
             'team-'+str(team_id), date_path, img_name))
 
         photo = Photo(
-                path = os.path.join('team-'+str(team_id), date_path, filename),
+                path = os.path.join('team-'+str(team_id), date_path, img_name),
                 event_id = event.id
                 )
         db.session.add(photo)

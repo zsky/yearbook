@@ -21,8 +21,8 @@
 }
 .auth_icons{
     position: relative;
-    left: -30px;
-    top: 10px;
+    left: 350px;
+    top: -25px;
 }
 .modal-body input{
     width: 370px;
@@ -42,4 +42,7 @@
 .team_intro{
     width: 290px;
     height: 180px;
+}
+p{
+    margin-bottom: 0;
 }

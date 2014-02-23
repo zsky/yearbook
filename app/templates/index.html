@@ -6,13 +6,13 @@
 {% block content %}
 <div class="header">
 {% if session.logged_in %}
-    <a class="pull-right" href="/profile">profile</a>
-    <a class="pull-right" href="/logout">logout</a>
+    <a class="pull-right" href="/profile">管理</a>
+    <a class="pull-right" href="/logout">登出</a>
 {% else %}
     <a class="pull-right" data-toggle="modal"
-        data-target="#login_modal">login</a>
+        data-target="#login_modal">登录</a>
     <a class="pull-right" data-toggle="modal"
-        data-target="#register_modal">register</a>
+        data-target="#register_modal">注册</a>
 {% endif %}
 </div>
 <!-- login modal -->
@@ -23,8 +23,8 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"
                     aria-hidden="true">&times;</button>
-                <h3 class="pull-left"> login</h3>
-                <div class="auth_icons pull-right">
+                <h3> 登录 </h3>
+                <div class="auth_icons">
                 <a href="{{ url_for('auth_douban') }}"><img
                     src="../static/img/douban_icon.jpg"/></a>
                 <a href="{{ url_for('auth_google') }}"><img 
@@ -58,7 +58,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"
                     aria-hidden="true">&times;</button>
-                <h3> register</h3>
+                <h3> 注册 </h3>
             </div>
             <div class="modal-body">
 
@@ -80,20 +80,22 @@
     </div>
 </div>
 
+<!-- search -->
 <div class="clear_float"></div>
 <div class="input-group">
     <input type="text" class="form-control search_words" 
-    placeholder="search teams"/>
-    <div class="input-group-btn">
-        <button id="search_button">search</button>
-    </div>
+    placeholder="搜索你感兴趣的团队"/>
+    <span class="input-group-btn">
+        <button class="btn btn-primary" type="button" id="search_button"><i class="glyphicon glyphicon-search"></i></button>
+    </span>
 </div>
 
 <div class="row">
 <div class="col-md-3">
-    <p> --tags</p>
+    <p></p>
+    <p> 不如试试下面这些？ </p>
     {% for t in tags %}
-    <p><button class="tag_teams" value="{{t.id}}">{{ t.title }}</button></p>
+    <p><button class="btn btn-success tag_teams" value="{{t.id}}">{{ t.title }}</button></p>
     {%  endfor %}
 </div>
 <div class="col-md-9">
