@@ -100,6 +100,16 @@ class Event(db.Model):
     team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     
+    def __repr__(self):
+        a =  self.title
+        a += self.content
+        a += str(self.likes)
+        a +=  str(self.timestamp)
+        a += str(self.category_id)
+        a += str(self.team_id)
+        a += str(self.author_id)
+        return a
+    
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     body = db.Column(db.String(380))

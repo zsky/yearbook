@@ -2,105 +2,116 @@
 {% block style %}
 <link type="text/css" rel="stylesheet"
 href="../static/css/bootstrap-datetimepicker.min.css"/>
+<link rel="stylesheet" type="text/css" href="../static/css/o.css"/>
 {% endblock %}
 
 {% block content %}
-<h3 class="text-center"><a href="{{url_for('index')}}">Yearbook</a></h3>
-<div>
-    <p><a href="{{ url_for('show_team', team_id=team.id) }}">{{ team.title }}</a></p>
-    <p>{{ team.intro }}</p>
-</div>
-<div class="">
-    <div class="add_category_div">
-    <form action="{{ url_for('add_category')}}" method="POST"
-        class="form-horizontal">
-        <label>add category 
-            <input type="text" class="form-control" name="categories" 
-            placeholder="categories">
-        </label>
-        <input type="text" class="hide" name="team_id" value="{{team.id}}">
-        <input type="submit"  class="btn btn-default" value="add">
-    </form>
-    </div>
-
-    <div class="add_event_div">
-        <h5> add a event</h5>
-    <form action="{{url_for('add_event')}}" method="post"
-        class="form-horizontal" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="dtp_input1" class="col-md-2 control-label">Event DateTime Picking</label>
-                <div class="input-group date form_date col-md-5"
+<div id="mainwrapper" class="mainwrapper">
+        <div class="header">
+            <h1>团队年鉴管理系统</h1><a href="{{ url_for('show_team', team_id=team.id) }}">返回团队主页</a>
+        </div>
+        <!-- leftpanel -->
+        <div class="leftpanel" style="max-width:200px; margin:10px;">
+            <div class="btn-group-vertical">
+                <button type="button" class="btn btn-success btn-lg btn-block">菜单</button>
+                <button type="button" class="btn btn-primary btn-lg btn-block" id="btn_add_event"><span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;&nbsp;&nbsp;事件添加</button>
+                <button type="button" class="btn btn-primary btn-lg btn-block" id="btn_add_category"><span class="glyphicon glyphicon-inbox"></span>&nbsp;&nbsp;&nbsp;&nbsp;类型管理</button>
+                <button type="button" class="btn btn-primary btn-lg btn-block" id="btn_manage_event"><span class="glyphicon glyphicon-list-alt"></span>&nbsp;&nbsp;&nbsp;&nbsp;事件管理</button>
+                <button type="button" class="btn btn-primary btn-lg btn-block" id="btn_manage_message"><span class="glyphicon glyphicon-envelope"></span>&nbsp;&nbsp;&nbsp;&nbsp;消息管理</button>
+                <button type="button" class="btn btn-primary btn-lg btn-block" id="btn_manage_member"><span class="glyphicon glyphicon-user"></span>&nbsp;&nbsp;&nbsp;&nbsp;成员管理</button>
+            </div>
+        </div>
+        <!-- rightpanel -->
+        <!-- add event-->
+        <div class="add_event_div">
+            <h4> <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;事件添加 </h4>
+            <form action="{{url_for('add_event')}}" method="post" class="form-horizontal" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="dtp_input1" class="col-md-2 control-label">事件时间</label>
+                    <div class="input-group date form_date col-md-5"
                     data-date="" data-date-format="dd MM yyyy" data-link-field="dtp_input1">
                     <input  class="form-control" name="event_time" size="16"
                     type="text" readonly >
                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
                     <span class="input-group-addon"><span class="glyphicon
                             glyphicon-calendar"></span></span>
+                        </div>
+                        <input type="hidden" id="dtp_input1" value="" /><br/>
+                    </div>
+                    <div class="from-group">
+                        <label>事件图片</label>
+                        <input type="file" class="form-control" name="file" accept="image/*" />
+                    </div>
+                    <div class="from-group">
+                        <label> 事件标题</label>
+                            <input type="text" class="form-control" name="event_title" placeholder="title" required/>
+                    </div>
+                    <div class="from-group">
+                        <label> 选择类别</label>
+                            <select class="form-control" name="category_id" placeholder="category"/>
+                            <option value="">无类别</option>
+                            {% for c in categories %}
+                            <option value="{{c.id}}">{{ c.title }}</option>
+                            {% endfor %}
+                        </select>
                 </div>
-                <input type="hidden" id="dtp_input1" value="" /><br/>
+                <div>
+                    <label class="from-group">事件内容</label>
+                        <textarea  class="form-control" name="event_content" rows="9" required></textarea>
+                </div>
+                <input type="text" class="hide" name="team_id" value="{{team.id}}"/>
+                <button type="submit"  class="btn btn-success btn-block">确认</button>
+            </form>
+        </div>
+        <!-- add category -->
+        <div class="add_category_div">
+            <h4> <span class="glyphicon glyphicon-inbox"></span>&nbsp;&nbsp;类型管理 </h4>
+            <form action="{{ url_for('add_category')}}" method="POST" class="form-horizontal">
+                <div class="from-group">
+                    <label>添加事件类别 </label>
+                    <input type="text" class="form-control" name="categories" placeholder="categories">
+                    <input type="text" class="hide" name="team_id" value="{{team.id}}">
+                    <input type="submit"  class="btn btn-success btn-block" value="add">                 
+                </div>
+            </form>
+        </div>
+        <!-- event management -->
+        <div class="manage_events_div">
+            <table class="table">
+                <tr>
+                    <td>时间</td><td>标题</td><td>内容摘要</td><td>图片</td><td>操作</td>
+                </tr>
+                {% for e in events %}
+                <tr id="e-{{e.id}}">
+                    <td>{{ e.timestamp.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ e.title }} </td>
+                    <td>{{ e.content }}</td>
+                    <td>{% for p in e.photos %}{{ p.path }}{% endfor %}</td>
+                    <td><button class="btn btn-danger btn-block del_event" value="{{e.id}}" > del</button></td>
+                </tr>
+               {% endfor %}
             </div>
-
+            </table>
+        </div>
+        <!-- member management -->
+        <div class="manage_member_div">
+            <div class="input-group">
+                <input type="text" id="search_username" class="form-control"/>
+                <span class="input-group-btn">
+                    <button class="btn btn-info search_user">查询队员</button>
+                </span>
+                <div id="search_user_result" value="{{team.id}}">
+                </div>
+            </div>
             <div>
-        <label>photo 
-            <input type="file" class="form-control" name="file"
-            accept="image/*" />
-        </label>
+                <button class="show_members" value="{{ team.id }}">显示队员</button>
+                <div id="team_members">
+                </div>
             </div>
-            <div>
-        <label> title
-            <input type="text" class="form-control" name="event_title" 
-            placeholder="title" required/>
-        </label>
-            </div>
-            <div>
-        <label> category 
-            <select class="form-control" name="category_id" 
-                placeholder="category"/>
-                <option value="">not classified</option>
-                {% for c in categories %}
-                <option value="{{c.id}}">{{ c.title }}</option>
-                {% endfor %}
-            </select>
-        </label>
-            </div>
-            <div>
-        <label>content
-            <textarea  class="form-control" name="event_content" rows="9" required></textarea>
-        </label>
-            </div>
-        <input type="text" class="hide" name="team_id" value="{{team.id}}"/>
-        <button type="submit"  class="btn btn-default">go</button>
-    </form>
-</div>
-
-</div>
-
-<!-- team -members -->
-<div>
-    <input type="text" id="search_username" class="form-control"/>
-    <button class="search_user">search_user</button>
-    <div id="search_user_result" value="{{team.id}}">
+        </div>   
     </div>
 </div>
-<div>
-    <button class="show_members" value="{{ team.id }}">show members</button>
-    <div id="team_members">
-    </div>
-</div>
 
-<div>
-    {% for e in events %}
-    <div id="e-{{e.id}}">
-        {{ e.timestamp.strftime('%Y-%m-%d') }}
-        {{ e.title }} 
-        {{ e.content }}
-        {% for p in e.photos %}
-        {{ p.path }}
-        {% endfor %}
-        <button class="del_event" value="{{e.id}}" > del</button>
-    </div>
-    {% endfor %}
-</div>
 {% endblock %}
 {% block script %}
 <script type="text/javascript" rel="script"

@@ -268,11 +268,15 @@ def show_team(team_id):
 
     print 'is_admin', is_admin
     team_events = team.events
+    #images = []
+    #for e in team_events:
+     #   images.append(e.photos.all())
     return render_template('show_team.html',
             title = 'show_team',
             team = team,
             is_member = is_member,
             is_admin = is_admin,
+      #      image = images, 
             events = team_events)
 
 @app.route('/tag_teams', methods=['POST'])
@@ -376,8 +380,9 @@ def add_event():
     else:
         event_date = datetime.now()
 
+    print str(request.form['event_title'].encode('utf-8'))
     event = Event(
-            title = request.form['event_title'],
+            title = str(request.form['event_title'].encode('utf-8')),
             content = request.form['event_content'],
             timestamp = event_date,
             team_id = team_id,
@@ -385,10 +390,11 @@ def add_event():
             )
     # category
     c_id = request.form['category_id'],
-    print 'c_id', c_id
+    print 'c_id', type(c_id)
     if c_id[0]:
         print 'has category'
-        event.category_id = c_id
+        event.category_id = c_id[0]
+    print event
     db.session.add(event)
     db.session.commit()
 

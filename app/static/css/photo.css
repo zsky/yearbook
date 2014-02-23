@@ -1,3 +1,61 @@
+#profile_header{
+    background: #95C5E9;
+    margin: 0;
+    padding: 40px;
+}
+.profile_header{
+    font-family: microsoft yahei;
+    color: white;
+    text-align: left;
+    margin: 0 30px;
+    padding: 0;
+}
+
+#profile_userinfo{
+    float: left;
+    background: #95C5E9;
+    margin: 30px 20px 0 50px;
+    width: 250px;
+    height: 400px;
+}
+#username{
+    font-family: microsoft yahei;
+    font-size: 36px;
+    color: white;
+}
+
+#uploadImg{
+     position: absolute;
+     margin-top: 145px;
+     margin-left: -25px;
+     font-size:8px; 
+     overflow:hidden; 
+}
+#photo_input{
+    position: absolute;
+    z-index:100; 
+    font-size:60px;
+    opacity:0;
+    filter:alpha(opacity=0); 
+}
+h3{
+    font-family: microsoft yahei;
+    color: white;
+}
+#profile_messages{
+    float: left;
+    background: #FFFFFF;
+    margin: 30px 0 0 20px;
+    width: 500px;
+    height: 400px;
+}
+#message{
+    font-family: microsoft yahei;
+    font-size: 36px;
+    color: #68A6D6;
+    text-align: left;;
+    margin: 20px 0 0 50px;
+}
 #preview_div{
     display: none;
 }
@@ -23,4 +81,3 @@
     left: 200px;
     top: 250px;
 }
-
