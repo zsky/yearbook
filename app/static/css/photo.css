@@ -31,13 +31,13 @@
      font-size:8px; 
      overflow:hidden; 
 }
-#photo_input{
+/*#photo_input{
     position: absolute;
     z-index:100; 
     font-size:60px;
     opacity:0;
     filter:alpha(opacity=0); 
-}
+}*/
 h3{
     font-family: microsoft yahei;
     color: white;

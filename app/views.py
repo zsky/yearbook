@@ -305,9 +305,11 @@ def show_team(team_id):
     else:
         team_events = team.events
 
-    oldest_time = team_events.order_by(Event.timestamp).first().timestamp
-    newest_time = team_events.order_by(Event.timestamp.desc()).first().timestamp
-    year_range = range(oldest_time.year, newest_time.year+1)
+    year_range = None
+    if team_events.first():
+        oldest_time = team_events.order_by(Event.timestamp).first().timestamp
+        newest_time = team_events.order_by(Event.timestamp.desc()).first().timestamp
+        year_range = range(oldest_time.year, newest_time.year+1)
     
     team_categories = team.categories
 
